@@ -1,6 +1,9 @@
 use home_config::HomeConfig;
 use std::io;
+use serde::{Deserialize, Serialize};
 
+
+#[derive(Serialize, Deserialize, Default)]
 struct Data {
     wpengine_user_id: String,
     wpengine_password: String
@@ -8,8 +11,8 @@ struct Data {
 
 fn read_config() {
     let config = HomeConfig::with_config_dir("wpe", "wpeconfig");
-    let data = config.toml().unwrap();
-    println!("Config: {}", data);
+    let data: Data = config.toml().unwrap();
+    println!("Config: {} {}", data.wpengine_user_id, data.wpengine_password);
 }
 
 
@@ -42,6 +45,6 @@ pub fn authenticate() {
         .expect("Failed to read line");
 
     set_config(username, token);
-    // read_config();
+    read_config();
 
 }

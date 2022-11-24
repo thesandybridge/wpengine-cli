@@ -419,4 +419,5 @@ name = "wpengine_cli_v2"
 version = "0.1.0"
 dependencies = [
  "home-config",
+ "serde",
 ]
