@@ -1,20 +1,47 @@
 use home_config::HomeConfig;
+use std::io;
+
+struct Data {
+    wpengine_user_id: String,
+    wpengine_password: String
+}
 
 fn read_config() {
     let config = HomeConfig::with_config_dir("wpe", "wpeconfig");
-    let data = config.read_to_string().unwrap();
+    let data = config.toml().unwrap();
     println!("Config: {}", data);
 }
 
 
-fn set_config() {
+fn set_config(username: String, token: String) {
     let config = HomeConfig::with_config_dir("wpe", "wpeconfig");
-    config.save("123456789").unwrap();
+    let data = Data {
+        wpengine_user_id: username,
+        wpengine_password: token
+    };
+    config.save_toml(&data).unwrap();
 }
 
 
-pub fn handle_auth() {
-    set_config();
-    read_config();
+pub fn authenticate() {
+    println!("Authenticate with wpengine.");
+
+    println!("Enter API Username:");
+
+    let mut username = String::new();
+    let mut token = String::new();
+
+    io::stdin()
+        .read_line(&mut username)
+        .expect("Failed to read line");
+
+    println!("Enter API Password:");
+
+    io::stdin()
+        .read_line(&mut token)
+        .expect("Failed to read line");
+
+    set_config(username, token);
+    // read_config();
 
 }

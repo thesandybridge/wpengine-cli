@@ -6,7 +6,7 @@ mod ssh;
 mod accounts;
 
 fn main() {
-    auth::handle_auth();
+    auth::authenticate();
     users::handle_users();
     sites::handle_sites();
     installs::handle_installs();
