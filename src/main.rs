@@ -1,19 +1,6 @@
 use api::Data;
 mod api;
-use clap::Parser;
 use clap::{arg, Command};
-
-#[derive(Parser, Debug)]
-#[command(author, version, about, long_about = None)]
-struct Args {
-   /// Get list of all sites
-   #[arg(short, long)]
-   sites: String,
-
-   /// Get list of sites by ID
-   #[arg(short, long)]
-   site: String,
-}
 
 struct Site {
     client: reqwest::blocking::Client,
