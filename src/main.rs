@@ -8,7 +8,8 @@ mod accounts;
 fn main() {
     api::auth();
     users::handle_users();
-    sites::get_sites();
+    let sites = sites::get_sites();
+    println!("{:#?}", sites);
     installs::handle_installs();
     ssh::handle_ssh();
     accounts::handle_accounts();
