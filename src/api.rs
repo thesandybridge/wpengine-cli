@@ -67,7 +67,7 @@ pub fn auth() {
         io::stdin()
             .read_line(&mut username)
             .expect("Failed to read line");
-        
+            
         let trimmed_user = username.trim();
     
         println!("Enter API Password:");
