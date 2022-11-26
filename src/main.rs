@@ -1,19 +1,40 @@
+use api::Data;
+
 mod api;
 
-pub fn get_sites() -> Result<(), Box<dyn std::error::Error>> { 
-    let config = api::get_config();
-    let client = reqwest::blocking::Client::new();
-    let res = client.get("https://api.wpengineapi.com/v1/sites")
-        .basic_auth(config.wpengine_user_id, Some(config.wpengine_password))
-        .send()?
-        .json::<serde_json::Value>()?;
+struct Site {
+    client: reqwest::blocking::Client,
+}
 
-    for i in res["results"].as_array().unwrap() {
-        println!("{}", i["name"]);
+impl Site {
+    pub fn new() -> Self {
+        let client = reqwest::blocking::Client::new();
+        Self { client }
     }
-    Ok(())
+
+    pub fn get_sites(config: &Data) -> Result<(), Box<dyn std::error::Error>> {
+        let res = Self::new().client.get("https://api.wpengineapi.com/v1/sites")
+            .basic_auth(&config.wpengine_user_id, Some(&config.wpengine_password))
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        for i in res["results"].as_array().unwrap() {
+            println!("{}", i["name"]);
+        }
+        Ok(())
+    }
+
+    pub fn get_site_by_id(config: &Data, id: &str) -> Result<(), Box<dyn std::error::Error>> {
+        let res = Self::new().client.get(&format!("https://api.wpengineapi.com/v1/sites/{}", id))
+            .basic_auth(&config.wpengine_user_id, Some(&config.wpengine_password))
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        println!("{}", res["name"]);
+        Ok(())
+    }
 }
 fn main() {
     api::auth();
-    get_sites();
+    Site::get_sites(&api::get_config());
 }
