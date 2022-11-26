@@ -53,6 +53,7 @@ pub fn get_config() -> Data {
     toml
 }
 
+/// Handles the cli for the authentication.
 pub fn set_auth() {
     println!("Authenticate with wpengine.");
 
@@ -79,7 +80,7 @@ pub fn set_auth() {
 }
 
 /// Handles user authentication.
-pub fn auth() {
+pub fn init() {
 
     if !authenticated() {
         set_auth();

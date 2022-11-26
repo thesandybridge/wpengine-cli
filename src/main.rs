@@ -41,7 +41,7 @@ impl Site {
     }
 }
 fn main() {
-    api::auth();
+    api::init();
     
     let command = std::env::args().nth(1).expect("no command given");
     let args = SiteCli {
