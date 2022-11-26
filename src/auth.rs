@@ -22,13 +22,22 @@ fn set_config(username: String, token: String) {
     config.save_toml(&data).unwrap();
 }
 
+/// Check if username and password are stored in config file.
 fn authenticated() -> bool {
-    let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
-    let data: Data = config.toml().unwrap();
-    let re = Regex::new(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$").unwrap();
     
-    if re.is_match(&data.wpengine_user_id) {
-        true
+    let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
+    let file = HomeConfig::path(&config);
+
+    if file.exists() {
+        let toml = config.toml::<Data>().unwrap();
+        let re = Regex::new(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$").unwrap();
+        
+        // check if username matches UUID format
+        if re.is_match(&toml.wpengine_user_id) {
+            true
+        } else {
+            false
+        }
     } else {
         false
     }
