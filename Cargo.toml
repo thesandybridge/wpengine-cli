@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 home-config = { version = "0.6.0", features = ["json", "yaml", "toml", "hcl"] }
 serde = "1.0"
+regex = "1"
