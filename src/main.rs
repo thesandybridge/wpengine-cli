@@ -1,8 +1,18 @@
 use api::Data;
 mod api;
+use clap::Parser;
+use clap::{arg, Command};
 
-struct SiteCli {
-    command: String
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+struct Args {
+   /// Get list of all sites
+   #[arg(short, long)]
+   sites: String,
+
+   /// Get list of sites by ID
+   #[arg(short, long)]
+   site: String,
 }
 
 struct Site {
@@ -40,26 +50,45 @@ impl Site {
         Ok(())
     }
 }
+
+fn cli() -> Command {
+    Command::new("wpe")
+        .about("WPEngine CLI")
+        .subcommand_required(true)
+        .arg_required_else_help(true)
+        .allow_external_subcommands(true)
+        .subcommand(
+            Command::new("sites")
+                .about("Fetch all sites from your wpengine account")
+        )
+        .subcommand(
+            Command::new("site")
+                .about("Fetch a site by its ID")
+                .arg(arg!(<ID> "The site ID"))
+                .arg_required_else_help(true),
+        )
+        .subcommand(
+            Command::new("auth")
+                .about("Authenticate with WP Engine API")
+        )
+}
+
 fn main() {
     api::init();
-    
-    let command = std::env::args().nth(1).expect("no command given");
-    let args = SiteCli {
-        command
-    };
+    let matches = cli().get_matches();    
 
     // Switch to listen for commands and execute proper functions.
-    match args.command.as_str() {
-        "sites" => {
+    match matches.subcommand() {
+        Some(("sites", _)) => {
             let config = api::get_config();
             Site::get_sites(&config).unwrap();
         },
-        "site" => {
+        Some(("site", sub_m)) => {
             let config = api::get_config();
-            let id = std::env::args().nth(2).expect("no id given");
-            Site::get_site_by_id(&config, &id).unwrap();
+            let id = sub_m.get_one::<String>("ID").unwrap();
+            Site::get_site_by_id(&config, id).unwrap();
         },
-        "auth" => {
+        Some(("auth", _)) => {
             api::set_auth();
         },
         _ => println!("Invalid command"),
