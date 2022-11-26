@@ -8,7 +8,8 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize, Default, Debug)]
 struct Data {
     wpengine_user_id: String,
-    wpengine_password: String
+    wpengine_password: String,
+    wpengine_api: String
 }
 
 /// Stores wpengine API username and password in config file.
@@ -17,7 +18,8 @@ fn set_config(username: String, token: String) {
     let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
     let data: Data = Data {
         wpengine_user_id: username,
-        wpengine_password: token
+        wpengine_password: token,
+        wpengine_api: String::from("https://api.wpengineapi.com/v1/")
     };
     config.save_toml(&data).unwrap();
 }
@@ -42,6 +44,13 @@ fn authenticated() -> bool {
     } else {
         false
     }
+}
+
+/// Get username and password from config file.
+fn get_config() -> Data {
+    let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
+    let toml = config.toml::<Data>().unwrap();
+    toml
 }
 
 /// Handles user authentication.
