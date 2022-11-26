@@ -54,7 +54,7 @@ fn get_config() -> Data {
 }
 
 /// Handles user authentication.
-pub fn authenticate() {
+pub fn auth() {
 
     if !authenticated() {
         println!("Authenticate with wpengine.");
