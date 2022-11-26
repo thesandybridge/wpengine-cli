@@ -1,6 +1,9 @@
 use api::Data;
-
 mod api;
+
+struct SiteCli {
+    command: String
+}
 
 struct Site {
     client: reqwest::blocking::Client,
@@ -36,5 +39,21 @@ impl Site {
 }
 fn main() {
     api::auth();
-    Site::get_sites(&api::get_config());
+    
+    let command = std::env::args().nth(1).expect("no command given");
+
+    let args = SiteCli {
+        command
+    };
+
+    if args.command == "sites" {
+        let config = api::get_config();
+        Site::get_sites(&config).unwrap();
+    } else if args.command == "site" {
+        let config = api::get_config();
+        let id = std::env::args().nth(2).expect("no id given");
+        Site::get_site_by_id(&config, &id).unwrap();
+    } else {
+        println!("Invalid command");
+    }
 }
