@@ -9,16 +9,17 @@ struct Data {
     wpengine_password: String
 }
 
+/// Read the config file and return the data.
 fn read_config() {
-    let config = HomeConfig::with_config_dir("wpe", "wpeconfig");
+    let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
     let data: Data = config.toml().unwrap();
     println!("Config: {} {}", data.wpengine_user_id, data.wpengine_password);
 }
 
-
+/// Stores wpengine API username and password in config file.
+/// $HOME/.config/wpe/wpeconfig.toml
 fn set_config(username: String, token: String) {
-    // Stores wpengine API username and password in config file.
-    let config = HomeConfig::with_config_dir("wpe", "wpeconfig");
+    let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
     let data = Data {
         wpengine_user_id: username,
         wpengine_password: token
@@ -27,7 +28,7 @@ fn set_config(username: String, token: String) {
     config.save_toml(&data).unwrap();
 }
 
-
+/// Handles user authentication.
 pub fn authenticate() {
     println!("Authenticate with wpengine.");
 
