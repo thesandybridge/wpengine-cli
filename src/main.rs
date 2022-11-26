@@ -57,6 +57,15 @@ fn cli() -> Command {
         .subcommand(
             Command::new("auth")
                 .about("Authenticate with WP Engine API")
+                .subcommand(
+                    Command::new("login")
+                    .about("Login to WP Engine API")
+                )
+                .subcommand(
+                    Command::new("reset")
+                        .about("Reset authentication")
+                )
+                .subcommand_required(true)
         )
 }
 
@@ -75,8 +84,16 @@ fn main() {
             let id = sub_m.get_one::<String>("ID").unwrap();
             Site::get_site_by_id(&config, id).unwrap();
         },
-        Some(("auth", _)) => {
-            api::set_auth();
+        Some(("auth", sub_m)) => {
+            match sub_m.subcommand() {
+                Some(("login", _)) => {
+                    api::set_auth();
+                },
+                Some(("reset", _)) => {
+                    api::reset();
+                },
+                _ => {}
+            }
         },
         _ => println!("Invalid command"),
     }

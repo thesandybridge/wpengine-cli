@@ -53,6 +53,14 @@ pub fn get_config() -> Data {
     toml
 }
 
+pub fn reset() {
+    let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
+    let file = HomeConfig::path(&config);
+    if file.exists() {
+        std::fs::remove_file(file).unwrap();
+    }
+}
+
 /// Handles the cli for the authentication.
 pub fn set_auth() {
     println!("Authenticate with wpengine.");
