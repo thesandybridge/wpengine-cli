@@ -1,5 +1,6 @@
 use home_config::HomeConfig;
 use std::io;
+use std::str;
 use serde::{Deserialize, Serialize};
 
 
@@ -9,18 +10,11 @@ struct Data {
     wpengine_password: String
 }
 
-/// Read the config file and return the data.
-fn read_config() {
-    let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
-    let data: Data = config.toml().unwrap();
-    println!("Config: {} {}", data.wpengine_user_id, data.wpengine_password);
-}
-
 /// Stores wpengine API username and password in config file.
 /// $HOME/.config/wpe/wpeconfig.toml
 fn set_config(username: String, token: String) {
     let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
-    let data = Data {
+    let data: Data = Data {
         wpengine_user_id: username,
         wpengine_password: token
     };
@@ -40,14 +34,17 @@ pub fn authenticate() {
     io::stdin()
         .read_line(&mut username)
         .expect("Failed to read line");
+    
+    let trimmed_user = username.trim();
 
     println!("Enter API Password:");
 
     io::stdin()
         .read_line(&mut token)
         .expect("Failed to read line");
-
-    set_config(username, token);
-    read_config();
+    
+    let trimmed_token = token.trim();
+    
+    set_config(trimmed_user.to_string(), trimmed_token.to_string());
 
 }
