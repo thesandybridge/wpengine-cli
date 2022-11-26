@@ -1,5 +1,5 @@
 [package]
-name = "wpengine_cli_v2"
+name = "wpe"
 version = "0.1.0"
 edition = "2021"
 
