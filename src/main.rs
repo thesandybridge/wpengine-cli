@@ -24,7 +24,7 @@ impl Site {
             .json::<serde_json::Value>()?;
 
         for i in res["results"].as_array().unwrap() {
-            println!("{}", i["id"]);
+            println!("{} = {}", i["name"], i["id"]);
         }
         Ok(())
     }
@@ -36,7 +36,7 @@ impl Site {
             .send()?
             .json::<serde_json::Value>()?;
 
-        println!("{}", res["name"]);
+        println!("{}", serde_json::to_string_pretty(&res).unwrap());
         Ok(())
     }
 }
