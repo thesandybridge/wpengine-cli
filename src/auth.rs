@@ -25,7 +25,7 @@ fn set_config(username: String, token: String) {
 fn authenticated() -> bool {
     let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
     let data: Data = config.toml().unwrap();
-    let re = Regex::new(r"([0-9A-Z]{8})(-)([0-9A-F]{4})(-)([0-9A-Z]{4})(-)([0-9A-Z]{4})(-)([0-9A-Z]{12})/i").unwrap();
+    let re = Regex::new(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$").unwrap();
     
     if re.is_match(&data.wpengine_user_id) {
         true
