@@ -1,16 +1,19 @@
 mod api;
-mod installs;
-mod sites;
-mod users;
-mod ssh;
-mod accounts;
 
+pub fn get_sites() -> Result<(), Box<dyn std::error::Error>> { 
+    let config = api::get_config();
+    let client = reqwest::blocking::Client::new();
+    let res = client.get("https://api.wpengineapi.com/v1/sites")
+        .basic_auth(config.wpengine_user_id, Some(config.wpengine_password))
+        .send()?
+        .json::<serde_json::Value>()?;
+
+    for i in res["results"].as_array().unwrap() {
+        println!("{}", i["name"]);
+    }
+    Ok(())
+}
 fn main() {
     api::auth();
-    users::handle_users();
-    let sites = sites::get_sites();
-    println!("{:#?}", sites);
-    installs::handle_installs();
-    ssh::handle_ssh();
-    accounts::handle_accounts();
+    get_sites();
 }
