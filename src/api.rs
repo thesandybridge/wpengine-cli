@@ -53,32 +53,36 @@ pub fn get_config() -> Data {
     toml
 }
 
+pub fn set_auth() {
+    println!("Authenticate with wpengine.");
+
+    let mut username = String::new();
+    let mut token = String::new();
+
+    println!("Enter API Username:");
+
+    io::stdin()
+        .read_line(&mut username)
+        .expect("Failed to read line");
+        
+    let trimmed_user = username.trim();
+
+    println!("Enter API Password:");
+
+    io::stdin()
+        .read_line(&mut token)
+        .expect("Failed to read line");
+    
+    let trimmed_token = token.trim();
+    
+    set_config(trimmed_user.to_string(), trimmed_token.to_string());
+}
+
 /// Handles user authentication.
 pub fn auth() {
 
     if !authenticated() {
-        println!("Authenticate with wpengine.");
-
-        let mut username = String::new();
-        let mut token = String::new();
-    
-        println!("Enter API Username:");
-    
-        io::stdin()
-            .read_line(&mut username)
-            .expect("Failed to read line");
-            
-        let trimmed_user = username.trim();
-    
-        println!("Enter API Password:");
-    
-        io::stdin()
-            .read_line(&mut token)
-            .expect("Failed to read line");
-        
-        let trimmed_token = token.trim();
-        
-        set_config(trimmed_user.to_string(), trimmed_token.to_string());
+        set_auth();
     }
 
 
