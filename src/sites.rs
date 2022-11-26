@@ -1,13 +1,4 @@
 use crate::api::get_config;
-use serde::{Deserialize};
-
-#[derive(Deserialize, Debug)]
-struct Sites {
-    previous: String,
-    next: String,
-    count: i32,
-    results: serde_json::Value,
-}
 
 pub fn get_sites() -> Result<(), Box<dyn std::error::Error>> { 
     let config = get_config();
