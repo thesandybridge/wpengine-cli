@@ -28,6 +28,7 @@ fn authenticated() -> bool {
     let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
     let file = HomeConfig::path(&config);
 
+    // Check if config file exists.
     if file.exists() {
         let toml = config.toml::<Data>().unwrap();
         let re = Regex::new(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$").unwrap();
