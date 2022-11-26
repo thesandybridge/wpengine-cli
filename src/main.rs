@@ -8,7 +8,7 @@ mod accounts;
 fn main() {
     api::auth();
     users::handle_users();
-    sites::handle_sites();
+    sites::get_sites();
     installs::handle_installs();
     ssh::handle_ssh();
     accounts::handle_accounts();

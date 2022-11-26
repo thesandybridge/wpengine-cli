@@ -6,10 +6,10 @@ use serde::{Deserialize, Serialize};
 
 
 #[derive(Serialize, Deserialize, Default, Debug)]
-struct Data {
-    wpengine_user_id: String,
-    wpengine_password: String,
-    wpengine_api: String
+pub struct Data {
+    pub wpengine_user_id: String,
+    pub wpengine_password: String,
+    pub wpengine_api: String
 }
 
 /// Stores wpengine API username and password in config file.
@@ -47,7 +47,7 @@ fn authenticated() -> bool {
 }
 
 /// Get username and password from config file.
-fn get_config() -> Data {
+pub fn get_config() -> Data {
     let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
     let toml = config.toml::<Data>().unwrap();
     toml
