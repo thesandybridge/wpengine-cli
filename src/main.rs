@@ -19,7 +19,7 @@ impl Site {
             .json::<serde_json::Value>()?;
 
         for i in res["results"].as_array().unwrap() {
-            println!("{}", i["name"]);
+            println!("{}", i["id"]);
         }
         Ok(())
     }
@@ -37,4 +37,5 @@ impl Site {
 fn main() {
     api::auth();
     Site::get_sites(&api::get_config());
+    Site::get_site_by_id(&api::get_config(), "ddd1028c-1363-4d38-8143-60e65639cd24");
 }
