@@ -15,8 +15,10 @@ pub fn get_sites() -> Result<(), Box<dyn std::error::Error>> {
     let res = client.get("https://api.wpengineapi.com/v1/sites")
         .basic_auth(config.wpengine_user_id, Some(config.wpengine_password))
         .send()?
-        .json::<Sites>()?;
+        .json::<serde_json::Value>()?;
 
-    println!("{:#?}", &res.results);
+    for i in res["results"].as_array().unwrap() {
+        println!("{}", i["name"]);
+    }
     Ok(())
 }
