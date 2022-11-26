@@ -46,14 +46,16 @@ fn main() {
         command
     };
 
-    if args.command == "sites" {
-        let config = api::get_config();
-        Site::get_sites(&config).unwrap();
-    } else if args.command == "site" {
-        let config = api::get_config();
-        let id = std::env::args().nth(2).expect("no id given");
-        Site::get_site_by_id(&config, &id).unwrap();
-    } else {
-        println!("Invalid command");
+    match args.command.as_str() {
+        "sites" => {
+            let config = api::get_config();
+            Site::get_sites(&config).unwrap();
+        },
+        "site" => {
+            let config = api::get_config();
+            let id = std::env::args().nth(2).expect("no id given");
+            Site::get_site_by_id(&config, &id).unwrap();
+        },
+        _ => println!("Invalid command"),
     }
 }
