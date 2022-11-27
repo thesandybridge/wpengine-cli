@@ -1,8 +1,8 @@
 use home_config::HomeConfig;
-use std::io;
 use std::str;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
+use dialoguer::Input;
 
 
 #[derive(Serialize, Deserialize, Default, Debug)]
@@ -65,26 +65,17 @@ pub fn reset() {
 pub fn set_auth() {
     println!("Authenticate with wpengine.");
 
-    let mut username = String::new();
-    let mut token = String::new();
+    let username: String = Input::new()
+    .with_prompt("Enter API Username")
+    .interact()
+    .unwrap();
 
-    println!("Enter API Username:");
-
-    io::stdin()
-        .read_line(&mut username)
-        .expect("Failed to read line");
-        
-    let trimmed_user = username.trim();
-
-    println!("Enter API Password:");
-
-    io::stdin()
-        .read_line(&mut token)
-        .expect("Failed to read line");
+    let token: String = Input::new()
+    .with_prompt("Enter API Password")
+    .interact()
+    .unwrap();
     
-    let trimmed_token = token.trim();
-    
-    set_config(trimmed_user.to_string(), trimmed_token.to_string());
+    set_config(username, token);
 }
 
 /// Handles user authentication.
