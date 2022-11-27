@@ -68,7 +68,7 @@ pub fn set_auth() {
     let mut username = String::new();
     let mut token = String::new();
 
-    print!("Enter API Username:");
+    println!("Enter API Username:");
 
     io::stdin()
         .read_line(&mut username)
@@ -76,7 +76,7 @@ pub fn set_auth() {
         
     let trimmed_user = username.trim();
 
-    print!("Enter API Password:");
+    println!("Enter API Password:");
 
     io::stdin()
         .read_line(&mut token)
