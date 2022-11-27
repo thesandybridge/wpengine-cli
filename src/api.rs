@@ -19,7 +19,7 @@ fn set_config(username: String, token: String) {
     let data: Data = Data {
         wpengine_user_id: username,
         wpengine_password: token,
-        wpengine_api: String::from("https://api.wpengineapi.com/v1/")
+        wpengine_api: String::from("https://api.wpengineapi.com/v1")
     };
     config.save_toml(&data).unwrap();
 }

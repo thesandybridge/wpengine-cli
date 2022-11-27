@@ -15,7 +15,7 @@ impl Site {
 
     /// Get all sites from wpengine API
     pub fn get_sites(config: &Data) -> Result<(), Box<dyn std::error::Error>> {
-        let res = Self::new().client.get("https://api.wpengineapi.com/v1/sites")
+        let res = Self::new().client.get(&format!("{}/sites", &config.wpengine_api))
             .basic_auth(&config.wpengine_user_id, Some(&config.wpengine_password))
             .send()?
             .json::<serde_json::Value>()?;
@@ -28,7 +28,7 @@ impl Site {
 
     /// Get a single site by its ID from the wpengine API
     pub fn get_site_by_id(config: &Data, id: &str) -> Result<(), Box<dyn std::error::Error>> {
-        let res = Self::new().client.get(&format!("https://api.wpengineapi.com/v1/sites/{}", id))
+        let res = Self::new().client.get(&format!("{}/sites/{}", &config.wpengine_api,  id))
             .basic_auth(&config.wpengine_user_id, Some(&config.wpengine_password))
             .send()?
             .json::<serde_json::Value>()?;
