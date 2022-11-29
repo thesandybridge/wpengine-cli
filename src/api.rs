@@ -12,9 +12,13 @@ pub struct Data {
     pub wpengine_api: String
 }
 
-/// Stores wpengine API username and password in config file.
-/// $HOME/.config/wpe/wpeconfig.toml
+/// This function will prompt the user for their WPEngine API credentials
+/**
+ - Stores wpengine API username and password in config file.
+    - $HOME/.config/wpe/wpeconfig.toml
+*/
 fn set_config(username: String, token: String) {
+
     let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
     let data: Data = Data {
         wpengine_user_id: username,
@@ -53,6 +57,8 @@ pub fn get_config() -> Data {
     toml
 }
 
+/// Reset the config file. This should be used if you change your API token or for debugging.
+
 pub fn reset() {
     let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
     let file = HomeConfig::path(&config);
@@ -80,10 +86,7 @@ pub fn set_auth() {
 
 /// Handles user authentication.
 pub fn init() {
-
     if !authenticated() {
         set_auth();
     }
-
-
 }
