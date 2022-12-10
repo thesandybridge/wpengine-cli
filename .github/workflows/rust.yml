@@ -54,7 +54,7 @@ build-win:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build-mac:
+build-mac:
     runs-on: macos-latest
 
     steps:
