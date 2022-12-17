@@ -38,6 +38,7 @@ impl Site {
     }
 }
 
+/// Handles the CLI using clap.
 fn cli() -> Command {
     Command::new("wpe")
         .about("WPEngine CLI")

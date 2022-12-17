@@ -40,6 +40,7 @@ fn authenticated() -> bool {
         let re = Regex::new(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$").unwrap();
         
         // check if username matches UUID format
+        // need a better check here, should consider pinging the API for a 200.
         if re.is_match(&toml.wpengine_user_id) {
             true
         } else {
@@ -85,8 +86,9 @@ pub fn set_auth() {
 }
 
 /// Handles user authentication.
+/// If the user is not authenticated redirect them to authentication.
 pub fn init() {
     if !authenticated() {
         set_auth();
     }
-}
+
