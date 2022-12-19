@@ -91,4 +91,4 @@ pub fn init() {
     if !authenticated() {
         set_auth();
     }
-
+}
