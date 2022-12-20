@@ -58,7 +58,6 @@ pub fn get_config() -> Data {
 }
 
 /// Reset the config file. This should be used if you change your API token or for debugging.
-
 pub fn reset() {
     let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
     let file = HomeConfig::path(&config);
