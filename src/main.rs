@@ -1,5 +1,3 @@
-use api::Data;
-mod api;
 use clap::{arg, Command};
 
 struct Site {
@@ -14,7 +12,7 @@ impl Site {
     }
 
     /// Get all sites from wpengine API
-    pub fn get_sites(config: &Data) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn get_sites(config: &wpe::Data) -> Result<(), Box<dyn std::error::Error>> {
         let res = Self::new().client.get(&format!("{}/sites", &config.wpengine_api))
             .basic_auth(&config.wpengine_user_id, Some(&config.wpengine_password))
             .send()?
@@ -27,7 +25,7 @@ impl Site {
     }
 
     /// Get a single site by its ID from the wpengine API
-    pub fn get_site_by_id(config: &Data, id: &str) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn get_site_by_id(config: &wpe::Data, id: &str) -> Result<(), Box<dyn std::error::Error>> {
         let res = Self::new().client.get(&format!("{}/sites/{}", &config.wpengine_api,  id))
             .basic_auth(&config.wpengine_user_id, Some(&config.wpengine_password))
             .send()?
@@ -71,27 +69,27 @@ fn cli() -> Command {
 }
 
 fn main() {
-    api::init();
+    wpe::init();
     let matches = cli().get_matches();    
 
     // Switch to listen for commands and execute proper functions.
     match matches.subcommand() {
         Some(("sites", _)) => {
-            let config = api::get_config();
+            let config = wpe::get_config();
             Site::get_sites(&config).unwrap();
         },
         Some(("site", sub_m)) => {
-            let config = api::get_config();
+            let config = wpe::get_config();
             let id = sub_m.get_one::<String>("ID").unwrap();
             Site::get_site_by_id(&config, id).unwrap();
         },
         Some(("auth", sub_m)) => {
             match sub_m.subcommand() {
                 Some(("login", _)) => {
-                    api::set_auth();
+                    wpe::set_auth();
                 },
                 Some(("reset", _)) => {
-                    api::reset();
+                    wpe::reset();
                 },
                 _ => {}
             }
