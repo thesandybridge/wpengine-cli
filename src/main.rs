@@ -13,8 +13,8 @@ impl Site {
     }
 
     /// Get all sites from wpengine API
-    pub fn get_sites(config: &wpe::Data) -> Result<(), Box<dyn std::error::Error>> {
-        let res = Self::new().client.get(&format!("{}/sites", &config.wpengine_api))
+    pub fn get_sites(&self, config: &wpe::Data) -> Result<(), Box<dyn std::error::Error>> {
+        let res = self.client.get(&format!("{}/sites", &config.wpengine_api))
             .basic_auth(&config.wpengine_user_id, Some(&config.wpengine_password))
             .send()?
             .json::<serde_json::Value>()?;
@@ -26,8 +26,8 @@ impl Site {
     }
 
     /// Get a single site by its ID from the wpengine API
-    pub fn get_site_by_id(config: &wpe::Data, id: &str) -> Result<(), Box<dyn std::error::Error>> {
-        let res = Self::new().client.get(&format!("{}/sites/{}", &config.wpengine_api,  id))
+    pub fn get_site_by_id(&self, config: &wpe::Data, id: &str) -> Result<(), Box<dyn std::error::Error>> {
+        let res = self.client.get(&format!("{}/sites/{}", &config.wpengine_api,  id))
             .basic_auth(&config.wpengine_user_id, Some(&config.wpengine_password))
             .send()?
             .json::<serde_json::Value>()?;
@@ -71,18 +71,19 @@ fn cli() -> Command {
 
 fn main() -> Result<()> {
     wpe::init()?;
-    let matches = cli().get_matches();    
+    let matches = cli().get_matches();
+    let site = Site::new();
 
     // Switch to listen for commands and execute proper functions.
     match matches.subcommand() {
         Some(("sites", _)) => {
             let config = wpe::get_config();
-            Site::get_sites(&config).unwrap();
+            site.get_sites(&config).unwrap();
         },
         Some(("site", sub_m)) => {
             let config = wpe::get_config();
             let id = sub_m.get_one::<String>("ID").unwrap();
-            Site::get_site_by_id(&config, id).unwrap();
+            site.get_site_by_id(&config, id).unwrap();
         },
         Some(("auth", sub_m)) => {
             match sub_m.subcommand() {
