@@ -70,18 +70,19 @@ fn cli() -> Command {
 }
 
 fn main() -> Result<()> {
+    // Check if authentication exists, else handle authentication.
     wpe::init()?;
+
+    let config = wpe::get_config();
     let matches = cli().get_matches();
     let site = Site::new();
 
     // Switch to listen for commands and execute proper functions.
     match matches.subcommand() {
         Some(("sites", _)) => {
-            let config = wpe::get_config();
             site.get_sites(&config).unwrap();
         },
         Some(("site", sub_m)) => {
-            let config = wpe::get_config();
             let id = sub_m.get_one::<String>("ID").unwrap();
             site.get_site_by_id(&config, id).unwrap();
         },
