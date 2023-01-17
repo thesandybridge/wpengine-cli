@@ -1,4 +1,5 @@
 use clap::{arg, Command};
+use anyhow::Result;
 
 struct Site {
     client: reqwest::blocking::Client,
@@ -31,7 +32,7 @@ impl Site {
             .send()?
             .json::<serde_json::Value>()?;
 
-        println!("{}", serde_json::to_string_pretty(&res).unwrap());
+        println!("{}", serde_json::to_string_pretty(&res)?);
         Ok(())
     }
 }
@@ -68,8 +69,8 @@ fn cli() -> Command {
         )
 }
 
-fn main() {
-    wpe::init();
+fn main() -> Result<()> {
+    wpe::init()?;
     let matches = cli().get_matches();    
 
     // Switch to listen for commands and execute proper functions.
@@ -86,14 +87,15 @@ fn main() {
         Some(("auth", sub_m)) => {
             match sub_m.subcommand() {
                 Some(("login", _)) => {
-                    wpe::set_auth();
+                    wpe::set_auth()?;
                 },
                 Some(("reset", _)) => {
-                    wpe::reset();
+                    wpe::reset()?;
                 },
                 _ => {}
             }
         },
         _ => println!("Invalid command"),
     }
+    Ok(())
 }

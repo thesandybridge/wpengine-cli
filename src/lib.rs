@@ -3,6 +3,7 @@ use std::str;
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use dialoguer::Input;
+use anyhow::Result;
 
 
 #[derive(Serialize, Deserialize, Default, Debug)]
@@ -17,7 +18,7 @@ pub struct Data {
   - Stores wpengine API username and password in config file.
   - $HOME/.config/wpe/wpeconfig.toml
   */
-fn set_config(username: String, token: String) {
+fn set_config(username: String, token: String) -> Result<()> {
 
     let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
     let data: Data = Data {
@@ -26,6 +27,8 @@ fn set_config(username: String, token: String) {
         wpengine_api: String::from("https://api.wpengineapi.com/v1")
     };
     config.save_toml(&data).unwrap();
+
+    Ok(())
 }
 /// Check if username and password are stored in config file.
 fn authenticated() -> bool {
@@ -58,16 +61,18 @@ pub fn get_config() -> Data {
 }
 
 /// Reset the config file. This should be used if you change your API token or for debugging.
-pub fn reset() {
+pub fn reset() -> Result<()> {
     let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
     let file = HomeConfig::path(&config);
     if file.exists() {
-        std::fs::remove_file(file).unwrap();
+        std::fs::remove_file(file)?;
     }
+
+    Ok(())
 }
 
 /// Handles the cli for the authentication.
-pub fn set_auth() {
+pub fn set_auth() -> Result<()> {
     println!("Authenticate with wpengine.");
 
     let username: String = Input::new()
@@ -80,13 +85,16 @@ pub fn set_auth() {
         .interact()
         .unwrap();
 
-    set_config(username, token);
+    set_config(username, token)?;
+
+    Ok(())
 }
 
 /// Handles user authentication.
 /// If the user is not authenticated redirect them to authentication.
-pub fn init() {
+pub fn init() -> Result<()> {
     if !authenticated() {
-        set_auth();
+        set_auth()?;
     }
+    Ok(())
 }
