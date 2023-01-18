@@ -15,10 +15,11 @@ impl Site {
     }
 
     pub fn next(&self) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
-        let res = self.client.get(&format!("{}/sites", &self.config.wpengine_api))
+        let res = self.client.get(&format!("{}/sites?offset=100", &self.config.wpengine_api))
             .basic_auth(&self.config.wpengine_user_id, Some(&self.config.wpengine_password))
             .send()?
             .json::<serde_json::Value>()?;
+
         Ok(res)
     }
 
@@ -52,6 +53,15 @@ fn cli() -> Command {
         .subcommand(
             Command::new("sites")
                 .about("Fetch all sites from your wpengine account")
+                .subcommand(
+                    Command::new("list")
+                        .about("Get list of sites")
+                )
+                .subcommand(
+                    Command::new("next")
+                        .about("Next page of results")
+                )
+                .subcommand_required(true)
         )
         .subcommand(
             Command::new("site")
@@ -83,11 +93,22 @@ fn main() -> Result<()> {
 
     // Switch to listen for commands and execute proper functions.
     match matches.subcommand() {
-        Some(("sites", _)) => {
+        Some(("sites", sub_m)) => {
             let res = site.get_sites().unwrap();
-            println!("{:?}", res["next"]);
-            for i in res["results"].as_array().unwrap() {
-                println!("{} = {}", i["name"], i["id"]);
+            
+            match sub_m.subcommand() {
+                Some(("next", _)) => {
+                    let next = site.next().unwrap();
+                    for i in next["results"].as_array().unwrap() {
+                        println!("{} = {}", i["name"], i["id"]);
+                    }
+                },
+                Some(("list", _)) => {
+                    for i in res["results"].as_array().unwrap() {
+                        println!("{} = {}", i["name"], i["id"]);
+                    }
+                }
+                _ => {}
             }
         },
         Some(("site", sub_m)) => {
