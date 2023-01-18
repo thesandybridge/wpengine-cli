@@ -29,7 +29,6 @@ impl Site {
             .send()?
             .json::<serde_json::Value>()?;
 
-        println!("{}", serde_json::to_string_pretty(&res)?);
         Ok(res)
     }
 }
