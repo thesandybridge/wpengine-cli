@@ -60,6 +60,7 @@ fn cli() -> Command {
                 .subcommand(
                     Command::new("next")
                         .about("Next page of results")
+                        .arg(arg!(<PAGE> "The page number"))
                 )
                 .subcommand_required(true)
         )
@@ -98,6 +99,8 @@ fn main() -> Result<()> {
             
             match sub_m.subcommand() {
                 Some(("next", _)) => {
+                    let page = sub_m.get_one::<i32>("PAGE").unwrap();
+                    println!("{}", page);
                     let next = site.next().unwrap();
                     for i in next["results"].as_array().unwrap() {
                         println!("{} = {}", i["name"], i["id"]);
