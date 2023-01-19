@@ -108,6 +108,7 @@ fn main() -> Result<()> {
                         }
 
                     }
+
                     let next = site.get_sites(Some(page_num)).unwrap();
                     let results = next["results"].as_array().unwrap();
                     println!("Showing {} results...", results.len());
