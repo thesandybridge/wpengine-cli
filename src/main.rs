@@ -91,10 +91,12 @@ fn main() -> Result<()> {
 
     // Switch to listen for commands and execute proper functions.
     match matches.subcommand() {
+        // Handles [sites] command logic.
         Some(("sites", sub_m)) => {
             match sub_m.subcommand() {
                 Some(("list", sub_n)) => {
                     let page = sub_n.get_one::<String>("PAGE");
+                    // Check for provided page argument, else provide default.
                     match page {
                         Some(x) => {
                             let n = x.parse::<i8>().unwrap();
@@ -120,11 +122,13 @@ fn main() -> Result<()> {
                 _ => {}
             }
         },
+        // Handles [site] command logic.
         Some(("site", sub_m)) => {
             let id = sub_m.get_one::<String>("ID").unwrap();
             let res = site.get_site_by_id(id).unwrap();
             println!("{}", serde_json::to_string_pretty(&res)?);
         },
+        // Handles [auth] command logic.
         Some(("auth", sub_m)) => {
             match sub_m.subcommand() {
                 Some(("login", _)) => {
