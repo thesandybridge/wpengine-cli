@@ -14,11 +14,11 @@ impl Site {
         Self { client, config}
     }
 
-    /// Get all sites from wpengine API
-    pub fn get_sites(&self, page: i8) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+    /// Get all sites from wpengine. Pass an optional page number to show more results.
+    pub fn get_sites(&self, page: Option<i8>) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
         let res = self
             .client
-            .get(&format!("{}/sites?offset={}00", &self.config.wpengine_api, page))
+            .get(&format!("{}/sites?offset={}00", &self.config.wpengine_api, page.unwrap_or(0)))
             .basic_auth(
                 &self.config.wpengine_user_id, 
                 Some(&self.config.wpengine_password)
@@ -45,6 +45,7 @@ impl Site {
     }
 }
 
+/// Setup the CLI and build the commands.
 fn cli() -> Command {
     Command::new("wpe")
         .about("WPEngine CLI")
@@ -89,7 +90,7 @@ fn main() -> Result<()> {
     let matches = cli().get_matches();
     let site = Site::new();
 
-    // Switch to listen for commands and execute proper functions.
+    // Handle logic for each command.
     match matches.subcommand() {
         // Handles [sites] command logic.
         Some(("sites", sub_m)) => {
@@ -101,7 +102,7 @@ fn main() -> Result<()> {
                         Some(x) => {
                             let n = x.parse::<i8>().unwrap();
                             let next = site
-                                .get_sites(n)
+                                .get_sites(Some(n))
                                 .unwrap();
                             let results = next["results"].as_array().unwrap();
                             println!("Showing {} results...", results.len());
@@ -110,7 +111,7 @@ fn main() -> Result<()> {
                             }
                         },
                         None => {
-                            let next = site.get_sites(0).unwrap();
+                            let next = site.get_sites(None).unwrap();
                             let results = next["results"].as_array().unwrap();
                             println!("Showing {} results...", results.len());
                             for i in results {
