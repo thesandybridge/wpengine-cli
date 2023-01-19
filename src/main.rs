@@ -14,8 +14,8 @@ impl Site {
         Self { client, config}
     }
 
-    pub fn next(&self) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
-        let res = self.client.get(&format!("{}/sites?offset=100", &self.config.wpengine_api))
+    pub fn next(&self, page: Option<i8>) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self.client.get(&format!("{}/sites?offset={}00", &self.config.wpengine_api, page.unwrap_or(1)))
             .basic_auth(&self.config.wpengine_user_id, Some(&self.config.wpengine_password))
             .send()?
             .json::<serde_json::Value>()?;
@@ -98,11 +98,13 @@ fn main() -> Result<()> {
             let res = site.get_sites().unwrap();
             
             match sub_m.subcommand() {
-                Some(("next", _)) => {
-                    let page = sub_m.get_one::<i32>("PAGE").unwrap();
-                    println!("{}", page);
-                    let next = site.next().unwrap();
-                    for i in next["results"].as_array().unwrap() {
+                Some(("next", sub_n)) => {
+                    let arg = sub_n.get_one::<String>("PAGE").unwrap();
+                    let page: i8 = arg.parse().unwrap();
+                    let next = site.next(Some(page)).unwrap();
+                    let results = next["results"].as_array().unwrap();
+                    println!("Showing {} results...", results.len());
+                    for i in results {
                         println!("{} = {}", i["name"], i["id"]);
                     }
                 },
