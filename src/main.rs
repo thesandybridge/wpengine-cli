@@ -97,27 +97,22 @@ fn main() -> Result<()> {
             match sub_m.subcommand() {
                 Some(("list", sub_n)) => {
                     let page = sub_n.get_one::<String>("PAGE");
+                    let page_num: i8;
                     // Check for provided page argument, else provide default.
                     match page {
                         Some(x) => {
-                            let n = x.parse::<i8>().unwrap();
-                            let next = site
-                                .get_sites(Some(n))
-                                .unwrap();
-                            let results = next["results"].as_array().unwrap();
-                            println!("Showing {} results...", results.len());
-                            for i in results {
-                                println!("{} = {}", i["name"], i["id"]);
-                            }
+                            page_num = x.parse::<i8>().unwrap();
                         },
                         None => {
-                            let next = site.get_sites(None).unwrap();
-                            let results = next["results"].as_array().unwrap();
-                            println!("Showing {} results...", results.len());
-                            for i in results {
-                                println!("{} = {}", i["name"], i["id"]);
-                            }
+                            page_num = 0; 
                         }
+
+                    }
+                    let next = site.get_sites(Some(page_num)).unwrap();
+                    let results = next["results"].as_array().unwrap();
+                    println!("Showing {} results...", results.len());
+                    for i in results {
+                        println!("{} = {}", i["name"], i["id"]);
                     }
                 },
                 _ => {}
