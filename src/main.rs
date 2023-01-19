@@ -16,8 +16,13 @@ impl Site {
 
     /// Get all sites from wpengine API
     pub fn get_sites(&self, page: i8) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
-        let res = self.client.get(&format!("{}/sites?offset={}00", &self.config.wpengine_api, page))
-            .basic_auth(&self.config.wpengine_user_id, Some(&self.config.wpengine_password))
+        let res = self
+            .client
+            .get(&format!("{}/sites?offset={}00", &self.config.wpengine_api, page))
+            .basic_auth(
+                &self.config.wpengine_user_id, 
+                Some(&self.config.wpengine_password)
+            )
             .send()?
             .json::<serde_json::Value>()?;
 
@@ -26,8 +31,13 @@ impl Site {
 
     /// Get a single site by its ID from the wpengine API
     pub fn get_site_by_id(&self, id: &str) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
-        let res = self.client.get(&format!("{}/sites/{}", &self.config.wpengine_api,  id))
-            .basic_auth(&self.config.wpengine_user_id, Some(&self.config.wpengine_password))
+        let res = self
+            .client
+            .get(&format!("{}/sites/{}", &self.config.wpengine_api,  id))
+            .basic_auth(
+                &self.config.wpengine_user_id, 
+                Some(&self.config.wpengine_password)
+            )
             .send()?
             .json::<serde_json::Value>()?;
 
@@ -87,7 +97,10 @@ fn main() -> Result<()> {
                     let page = sub_n.get_one::<String>("PAGE");
                     match page {
                         Some(x) => {
-                            let next = site.get_sites(x.parse::<i8>().unwrap()).unwrap();
+                            let n = x.parse::<i8>().unwrap();
+                            let next = site
+                                .get_sites(n)
+                                .unwrap();
                             let results = next["results"].as_array().unwrap();
                             println!("Showing {} results...", results.len());
                             for i in results {
