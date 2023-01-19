@@ -14,18 +14,9 @@ impl Site {
         Self { client, config}
     }
 
-    pub fn next(&self, page: Option<i8>) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
-        let res = self.client.get(&format!("{}/sites?offset={}00", &self.config.wpengine_api, page.unwrap_or(1)))
-            .basic_auth(&self.config.wpengine_user_id, Some(&self.config.wpengine_password))
-            .send()?
-            .json::<serde_json::Value>()?;
-
-        Ok(res)
-    }
-
     /// Get all sites from wpengine API
-    pub fn get_sites(&self) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
-        let res = self.client.get(&format!("{}/sites", &self.config.wpengine_api))
+    pub fn get_sites(&self, page: i8) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self.client.get(&format!("{}/sites?offset={}00", &self.config.wpengine_api, page))
             .basic_auth(&self.config.wpengine_user_id, Some(&self.config.wpengine_password))
             .send()?
             .json::<serde_json::Value>()?;
@@ -56,12 +47,8 @@ fn cli() -> Command {
                 .subcommand(
                     Command::new("list")
                         .about("Get list of sites")
-                )
-                .subcommand(
-                    Command::new("next")
-                        .about("Next page of results")
-                        .arg(arg!(<PAGE> "The page number"))
-                )
+                        .arg(arg!(<PAGE> "The page number").required(false))
+                ) 
                 .subcommand_required(true)
         )
         .subcommand(
@@ -95,24 +82,28 @@ fn main() -> Result<()> {
     // Switch to listen for commands and execute proper functions.
     match matches.subcommand() {
         Some(("sites", sub_m)) => {
-            let res = site.get_sites().unwrap();
-            
             match sub_m.subcommand() {
-                Some(("next", sub_n)) => {
-                    let arg = sub_n.get_one::<String>("PAGE").unwrap();
-                    let page: i8 = arg.parse().unwrap();
-                    let next = site.next(Some(page)).unwrap();
-                    let results = next["results"].as_array().unwrap();
-                    println!("Showing {} results...", results.len());
-                    for i in results {
-                        println!("{} = {}", i["name"], i["id"]);
+                Some(("list", sub_n)) => {
+                    let page = sub_n.get_one::<String>("PAGE");
+                    match page {
+                        Some(x) => {
+                            let next = site.get_sites(x.parse::<i8>().unwrap()).unwrap();
+                            let results = next["results"].as_array().unwrap();
+                            println!("Showing {} results...", results.len());
+                            for i in results {
+                                println!("{} = {}", i["name"], i["id"]);
+                            }
+                        },
+                        None => {
+                            let next = site.get_sites(0).unwrap();
+                            let results = next["results"].as_array().unwrap();
+                            println!("Showing {} results...", results.len());
+                            for i in results {
+                                println!("{} = {}", i["name"], i["id"]);
+                            }
+                        }
                     }
                 },
-                Some(("list", _)) => {
-                    for i in res["results"].as_array().unwrap() {
-                        println!("{} = {}", i["name"], i["id"]);
-                    }
-                }
                 _ => {}
             }
         },
