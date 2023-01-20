@@ -108,7 +108,7 @@ fn main() -> Result<()> {
                         }
 
                     }
-
+                    // Fetch sites and display results. Will also show paginated results.
                     let next = site.get_sites(Some(page_num)).unwrap();
                     let results = next["results"].as_array().unwrap();
                     println!("Showing {} results...", results.len());
@@ -116,7 +116,7 @@ fn main() -> Result<()> {
                         println!("{} = {}", i["name"], i["id"]);
                     }
                 },
-                _ => {}
+                _ => println!("Invalid command")
             }
         },
         // Handles [site] command logic.
@@ -137,7 +137,7 @@ fn main() -> Result<()> {
                 _ => {}
             }
         },
-        _ => println!("Invalid command"),
+        _ => println!("Invalid command")
     }
     Ok(())
 }
