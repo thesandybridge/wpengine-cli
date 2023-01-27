@@ -20,14 +20,14 @@ jobs:
           override: true
 
       - name: Build
-        run: cargo build --all --release && strip target/release/wpengine_cli_v2 && mv target/release/wpengine_cli_v2 target/release/wpengine_cli_v2_amd64
+        run: cargo build --all --release && strip target/release/wpe && mv target/release/wpe target/release/wpe_amd64
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            target/release/wpengine_cli_v2_amd64
+            target/release/wpe_amd64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -52,7 +52,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: target/release/wpengine_cli_v2.exe
+          files: target/release/wpe.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -72,14 +72,14 @@ jobs:
           override: true
 
       - name: Build for mac
-        run: cargo build --all --release && strip target/release/wpengine_cli_v2 && mv target/release/wpengine_cli_v2 target/release/wpengine_cli_v2_darwin
+        run: cargo build --all --release && strip target/release/wpe && mv target/release/wpe target/release/wpe_darwin
 
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            target/release/wpengine_cli_v2_darwin
+            target/release/wpe_darwin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
