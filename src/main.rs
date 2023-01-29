@@ -1,5 +1,6 @@
 use clap::{arg, Command};
 use anyhow::Result;
+use dialoguer::{Select, theme::ColorfulTheme};
 
 struct Commands {
     client: reqwest::blocking::Client,
@@ -101,12 +102,7 @@ fn cli() -> Command {
         .subcommand(
             Command::new("sites")
                 .about("Fetch all sites from your wpengine account")
-                .subcommand(
-                    Command::new("list")
-                        .about("Get list of sites")
-                        .arg(arg!(<PAGE> "The page number").required(false))
-                ) 
-                .subcommand_required(true)
+                .arg(arg!(<PAGE> "The page number").required(false))
         )
         .subcommand(
             Command::new("site")
@@ -159,31 +155,45 @@ fn main() -> Result<()> {
     // Handle logic for each command.
     match matches.subcommand() {
         // Handles [sites] command logic.
-        Some(("sites", sub_m)) => {
-            match sub_m.subcommand() {
-                Some(("list", sub_n)) => {
-                    let page = sub_n.get_one::<String>("PAGE");
-                    let page_num: i32;
-                    // Check for provided page argument, else provide default.
-                    match page {
-                        Some(x) => {
-                            page_num = x.parse::<i32>().unwrap();
-                        },
-                        None => {
-                            page_num = 0; 
-                        }
-
-                    }
-                    // Fetch sites and display results. Will also show paginated results.
-                    let next = command.get_sites(Some(page_num)).unwrap();
-                    let results = next["results"].as_array().unwrap();
-                    println!("Showing {} results...", results.len());
-                    for i in results {
-                        println!("{} = {}", i["name"], i["id"]);
-                    }
+        Some(("sites", sub_n)) => {
+            let page = sub_n.get_one::<String>("PAGE");
+            let page_num: i32;
+            // Check for provided page argument, else provide default.
+            match page {
+                Some(x) => {
+                    page_num = x.parse::<i32>().unwrap();
                 },
-                _ => println!("Invalid command")
+                None => {
+                    page_num = 0; 
+                }
+
             }
+            // Fetch sites and display results. Will also show paginated results.
+            let next = command.get_sites(Some(page_num)).unwrap();
+            let results = next["results"].as_array().unwrap();
+
+            // Handle selection logic
+            let selection = Select::with_theme(&ColorfulTheme::default())
+                .with_prompt("Select a site to view...")
+                .items(
+                    &results
+                    .into_iter()
+                    .map(|x| &x["name"])
+                    .collect::<Vec<&serde_json::Value>>()
+                    )
+                .interact()
+                .unwrap();
+
+            let item = &results[selection]["id"];
+            let site = command.get_site_by_id(
+                &item.as_str().unwrap()
+                ).unwrap();
+            println!("Selection: {}", serde_json::to_string_pretty(&site)?);
+
+            //println!("Showing {} results...", results.len());
+            //for i in results {
+            //    println!("{} = {}", i["name"], i["id"]);
+            //}
         },
         // Handles [site] command logic.
         Some(("site", sub_m)) => {
