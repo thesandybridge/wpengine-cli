@@ -1,17 +1,31 @@
 use clap::{arg, Command};
 use anyhow::Result;
 
-struct Site {
+struct Commands {
     client: reqwest::blocking::Client,
     config: wpe::Data,
 }
 
-impl Site {
+impl Commands {
     /// Creates a new reqwest client instance
     pub fn new() -> Self {
         let client = reqwest::blocking::Client::new();
         let config = wpe::get_config(); 
         Self { client, config}
+    }
+
+    pub fn status(&self) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .get(&format!("{}/status", &self.config.wpengine_api))
+            .basic_auth(
+                &self.config.wpengine_user_id, 
+                Some(&self.config.wpengine_password)
+            )
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
     }
 
     /// Get all sites from wpengine. Pass an optional page number to show more results.
@@ -81,6 +95,10 @@ fn cli() -> Command {
                 )
                 .subcommand_required(true)
         )
+        .subcommand(
+            Command::new("status")
+                .about("Get API status")
+        )
 }
 
 fn main() -> Result<()> {
@@ -88,7 +106,7 @@ fn main() -> Result<()> {
     wpe::init()?;
 
     let matches = cli().get_matches();
-    let site = Site::new();
+    let command = Commands::new();
 
     // Handle logic for each command.
     match matches.subcommand() {
@@ -109,7 +127,7 @@ fn main() -> Result<()> {
 
                     }
                     // Fetch sites and display results. Will also show paginated results.
-                    let next = site.get_sites(Some(page_num)).unwrap();
+                    let next = command.get_sites(Some(page_num)).unwrap();
                     let results = next["results"].as_array().unwrap();
                     println!("Showing {} results...", results.len());
                     for i in results {
@@ -122,7 +140,7 @@ fn main() -> Result<()> {
         // Handles [site] command logic.
         Some(("site", sub_m)) => {
             let id = sub_m.get_one::<String>("ID").unwrap();
-            let res = site.get_site_by_id(id).unwrap();
+            let res = command.get_site_by_id(id).unwrap();
             println!("{}", serde_json::to_string_pretty(&res)?);
         },
         // Handles [auth] command logic.
@@ -137,6 +155,11 @@ fn main() -> Result<()> {
                 _ => {}
             }
         },
+        // This endpoint will report the system status and any outages that might be occurring.
+        Some(("status", _)) => {
+            let status = command.status().unwrap();
+            println!("{}", serde_json::to_string_pretty(&status)?)
+        }
         _ => println!("Invalid command")
     }
     Ok(())
