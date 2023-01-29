@@ -13,7 +13,8 @@ impl Commands {
         let config = wpe::get_config(); 
         Self { client, config}
     }
-
+    
+    /// Status endpoint to check API health.
     pub fn status(&self) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
         let res = self
             .client
@@ -58,6 +59,7 @@ impl Commands {
         Ok(res)
     }
 
+    /// List all accounts, optional page offset.
     pub fn get_accounts(&self, page: Option<i32>) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
         let res = self 
             .client
@@ -72,6 +74,7 @@ impl Commands {
         Ok(res)
     }
 
+    /// List account by ID.
     pub fn get_account_by_id(&self, id: &str) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
         let res = self
             .client
