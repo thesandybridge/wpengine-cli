@@ -175,12 +175,11 @@ fn main() -> Result<()> {
             // Handle selection logic
             let selection = Select::with_theme(&ColorfulTheme::default())
                 .with_prompt("Select a site to view...")
-                .items(
-                    &results
+                .items(&results
                     .into_iter()
                     .map(|x| &x["name"])
                     .collect::<Vec<&serde_json::Value>>()
-                    )
+                )
                 .interact()
                 .unwrap();
 
