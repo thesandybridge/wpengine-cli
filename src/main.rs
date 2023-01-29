@@ -101,12 +101,12 @@ fn cli() -> Command {
         .allow_external_subcommands(true)
         .subcommand(
             Command::new("sites")
-                .about("Fetch all sites from your wpengine account")
+                .about("Display list of sites as selection. Selecting one will show more options.")
                 .arg(arg!(<PAGE> "The page number").required(false))
         )
         .subcommand(
             Command::new("site")
-                .about("Fetch a site by its ID")
+                .about("Fetch a site by its ID. This command is a headless alternative to the selection dialogue.")
                 .arg(arg!(<ID> "The site ID"))
                 .arg_required_else_help(true),
         )
