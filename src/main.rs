@@ -189,11 +189,6 @@ fn main() -> Result<()> {
                 &item.as_str().unwrap()
                 ).unwrap();
             println!("Selection: {}", serde_json::to_string_pretty(&site)?);
-
-            //println!("Showing {} results...", results.len());
-            //for i in results {
-            //    println!("{} = {}", i["name"], i["id"]);
-            //}
         },
         // Handles [site] command logic.
         Some(("site", sub_m)) => {
