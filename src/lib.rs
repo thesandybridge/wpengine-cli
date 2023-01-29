@@ -98,3 +98,93 @@ pub fn init() -> Result<()> {
     }
     Ok(())
 }
+
+pub struct Commands {
+    client: reqwest::blocking::Client,
+    config: Data,
+}
+
+impl Commands {
+    /// Creates a new reqwest client instance
+    pub fn new() -> Self {
+        let client = reqwest::blocking::Client::new();
+        let config = get_config(); 
+        Self { client, config}
+    }
+    
+    /// Status endpoint to check API health.
+    pub fn status(&self) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .get(&format!("{}/status", &self.config.wpengine_api))
+            .basic_auth(
+                &self.config.wpengine_user_id, 
+                Some(&self.config.wpengine_password)
+            )
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
+    /// Get all sites from wpengine. Pass an optional page number to show more results.
+    pub fn get_sites(&self, page: Option<i32>) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .get(&format!("{}/sites?offset={}", &self.config.wpengine_api, page.unwrap_or(0) * 100))
+            .basic_auth(
+                &self.config.wpengine_user_id, 
+                Some(&self.config.wpengine_password)
+            )
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
+    /// Get a single site by its ID from the wpengine API
+    pub fn get_site_by_id(&self, id: &str) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .get(&format!("{}/sites/{}", &self.config.wpengine_api,  id))
+            .basic_auth(
+                &self.config.wpengine_user_id, 
+                Some(&self.config.wpengine_password)
+            )
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
+    /// List all accounts, optional page offset.
+    pub fn get_accounts(&self, page: Option<i32>) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self 
+            .client
+            .get(&format!("{}/accounts?offset={}", &self.config.wpengine_api, page.unwrap_or(0) * 100))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
+    /// List account by ID.
+    pub fn get_account_by_id(&self, id: &str) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .get(&format!("{}/accounts/{}", &self.config.wpengine_api,  id))
+            .basic_auth(
+                &self.config.wpengine_user_id, 
+                Some(&self.config.wpengine_password)
+            )
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+}
+
