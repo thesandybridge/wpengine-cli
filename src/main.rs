@@ -85,6 +85,7 @@ impl Commands {
 
         Ok(res)
     }
+
 }
 
 /// Setup the CLI and build the commands.

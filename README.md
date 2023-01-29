@@ -10,7 +10,13 @@ version of the tool to be implemented as part of a pipeline or other similar use
 
 ## Authentication
 
+Running the CLI for the first time will prompt you to add a username and password for the wpengine API.
+
+You can also use the `auth` command to update the credentials or manually add them.
+
 ## Sites
+
+The `sites` command will allow you to list, add, update, or delete existing sites.
 
 ## Installs
 
