@@ -15,10 +15,10 @@ impl Site {
     }
 
     /// Get all sites from wpengine. Pass an optional page number to show more results.
-    pub fn get_sites(&self, page: Option<i8>) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+    pub fn get_sites(&self, page: Option<i32>) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
         let res = self
             .client
-            .get(&format!("{}/sites?offset={}00", &self.config.wpengine_api, page.unwrap_or(0)))
+            .get(&format!("{}/sites?offset={}", &self.config.wpengine_api, page.unwrap_or(0) * 100))
             .basic_auth(
                 &self.config.wpengine_user_id, 
                 Some(&self.config.wpengine_password)
@@ -97,11 +97,11 @@ fn main() -> Result<()> {
             match sub_m.subcommand() {
                 Some(("list", sub_n)) => {
                     let page = sub_n.get_one::<String>("PAGE");
-                    let page_num: i8;
+                    let page_num: i32;
                     // Check for provided page argument, else provide default.
                     match page {
                         Some(x) => {
-                            page_num = x.parse::<i8>().unwrap();
+                            page_num = x.parse::<i32>().unwrap();
                         },
                         None => {
                             page_num = 0; 
