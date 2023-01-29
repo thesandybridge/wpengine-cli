@@ -176,7 +176,7 @@ fn main() -> Result<()> {
             let selection = Select::with_theme(&ColorfulTheme::default())
                 .with_prompt("Select a site to view...")
                 .items(&results
-                    .into_iter()
+                    .iter()
                     .map(|x| &x["name"])
                     .collect::<Vec<&serde_json::Value>>()
                 )
@@ -186,7 +186,8 @@ fn main() -> Result<()> {
             let item = &results[selection]["id"];
             let site = command.get_site_by_id(
                 &item.as_str().unwrap()
-                ).unwrap();
+            ).unwrap();
+
             println!("Selection: {}", serde_json::to_string_pretty(&site)?);
         },
         // Handles [site] command logic.
