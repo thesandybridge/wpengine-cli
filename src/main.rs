@@ -11,14 +11,16 @@ fn cli() -> Command {
         .allow_external_subcommands(true)
         .subcommand(
             Command::new("sites")
-                .about("Display list of sites as selection. Selecting one will show more options.")
+                .about("Display list of sites as selection.")
                 .arg(arg!(<PAGE> "The page number").required(false))
+                .after_help("Selecting one will fetch the site and display more options.")
         )
         .subcommand(
             Command::new("site")
-                .about("Fetch a site by its ID. This command is a headless alternative to the selection dialogue.")
+                .about("Fetch a site by its ID.")
                 .arg(arg!(<ID> "The site ID"))
-                .arg_required_else_help(true),
+                .arg_required_else_help(true)
+                .after_help("This command is a headless alternative to the selection dialogue.")
         )
         .subcommand(
             Command::new("accounts")

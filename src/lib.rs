@@ -30,6 +30,7 @@ fn set_config(username: String, token: String) -> Result<()> {
 
     Ok(())
 }
+
 /// Check if username and password are stored in config file.
 fn authenticated() -> bool {
 
