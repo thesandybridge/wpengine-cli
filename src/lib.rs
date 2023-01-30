@@ -7,7 +7,7 @@ use anyhow::Result;
 
 
 #[derive(Serialize, Deserialize, Default, Debug)]
-pub struct Data {
+pub struct Config {
     pub wpengine_user_id: String,
     pub wpengine_password: String,
     pub wpengine_api: String
@@ -21,7 +21,7 @@ pub struct Data {
 fn set_config(username: String, token: String) -> Result<()> {
 
     let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
-    let data: Data = Data {
+    let data: Config = Config {
         wpengine_user_id: username,
         wpengine_password: token,
         wpengine_api: String::from("https://api.wpengineapi.com/v1")
@@ -39,7 +39,7 @@ fn authenticated() -> bool {
 
     // Check if config file exists.
     if file.exists() {
-        let toml = config.toml::<Data>().unwrap();
+        let toml = config.toml::<Config>().unwrap();
         let re = Regex::new(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$").unwrap();
 
         // check if username matches UUID format
@@ -55,9 +55,9 @@ fn authenticated() -> bool {
 }
 
 /// Get username and password from config file.
-pub fn get_config() -> Data {
+pub fn get_config() -> Config {
     let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
-    let toml = config.toml::<Data>().unwrap();
+    let toml = config.toml::<Config>().unwrap();
     toml
 }
 
@@ -100,12 +100,12 @@ pub fn init() -> Result<()> {
     Ok(())
 }
 
-pub struct Commands {
+pub struct API {
     client: reqwest::blocking::Client,
-    config: Data,
+    config: Config,
 }
 
-impl Commands {
+impl API {
     /// Creates a new reqwest client instance
     pub fn new() -> Self {
         let client = reqwest::blocking::Client::new();

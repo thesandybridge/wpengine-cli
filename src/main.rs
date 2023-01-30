@@ -62,7 +62,7 @@ fn main() -> Result<()> {
     wpe::init()?;
 
     let matches = cli().get_matches();
-    let command = wpe::Commands::new();
+    let command = wpe::API::new();
 
     // Handle logic for each command.
     match matches.subcommand() {
