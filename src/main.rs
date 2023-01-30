@@ -139,7 +139,7 @@ fn main() -> Result<()> {
                     }
                     
                 },
-                _ => println!("Invalid command")
+                _ => println!("Invalid command. Please use <help> to see full list of commands.")
             }
         },
         // Handles [site] command logic.
@@ -165,7 +165,7 @@ fn main() -> Result<()> {
             let status = command.status().unwrap();
             println!("{}", serde_json::to_string_pretty(&status)?)
         }
-        _ => println!("Invalid command")
+        _ => println!("Invalid command. Please use <help> to see full list of commands.")
     }
     Ok(())
 }
