@@ -25,12 +25,7 @@ fn cli() -> Command {
         .subcommand(
             Command::new("accounts")
                 .about("Fetch all sites from your wpengine account")
-                .subcommand(
-                    Command::new("list")
-                        .about("Get list of accounts")
-                        .arg(arg!(<PAGE> "The page number").required(false))
-                ) 
-                .subcommand_required(true)
+                .arg(arg!(<PAGE> "The page number").required(false))
         )
         .subcommand(
             Command::new("account")
@@ -108,39 +103,39 @@ fn main() -> Result<()> {
             let res = command.get_site_by_id(id).unwrap();
             println!("{}", serde_json::to_string_pretty(&res)?);
         },
-        Some(("accounts", sub_m)) => {
-            match sub_m.subcommand() {
-                Some(("list", sub_n)) => {
-                    let page = sub_n.get_one::<String>("PAGE");
-                    let page_num: i32;
-                    // Check for provided page argument, else provide default.
-                    match page {
-                        Some(x) => {
-                            page_num = x.parse::<i32>().unwrap();
-                        },
-                        None => {
-                            page_num = 0; 
-                        }
-
-                    }
-                    // Fetch sites and display results. Will also show paginated results.
-                    let next = command.get_accounts(Some(page_num)).unwrap();
-                    let results = next["results"].as_array();
-                    match results {
-                        Some(result) => {
-                            println!("Showing {} results...", result.len());
-                            for i in result {
-                                println!("{} = {}", i["name"], i["id"]);
-                            }
-                        },
-                        None => {
-                            println!("Nothing found")
-                        }
-                    }
-                    
+        Some(("accounts", sub_n)) => {
+            let page = sub_n.get_one::<String>("PAGE");
+            let page_num: i32;
+            // Check for provided page argument, else provide default.
+            match page {
+                Some(x) => {
+                    page_num = x.parse::<i32>().unwrap();
                 },
-                _ => println!("Invalid command. Please use <help> to see full list of commands.")
+                None => {
+                    page_num = 0; 
+                }
+
             }
+            // Fetch sites and display results. Will also show paginated results.
+            let next = command.get_accounts(Some(page_num)).unwrap();
+            let results = next["results"].as_array().unwrap();
+                    
+            let selection = Select::with_theme(&ColorfulTheme::default())
+                .with_prompt("Select a site to view...")
+                .items(&results
+                    .iter()
+                    .map(|x| &x["name"])
+                    .collect::<Vec<&serde_json::Value>>()
+                )
+                .interact()
+                .unwrap();
+
+            let item = &results[selection]["id"];
+            let site = command.get_account_by_id(
+                &item.as_str().unwrap()
+            ).unwrap();
+
+            println!("Selection: {}", serde_json::to_string_pretty(&site)?);
         },
         // Handles [site] command logic.
         Some(("account", sub_m)) => {
