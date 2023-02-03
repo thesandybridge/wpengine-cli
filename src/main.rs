@@ -6,6 +6,7 @@ use dialoguer::{Select, theme::ColorfulTheme};
 fn cli() -> Command {
     Command::new("wpe")
         .about("WPEngine CLI")
+        .arg(arg!(-H --headless "Enables headless mode").required(false))
         .subcommand_required(true)
         .arg_required_else_help(true)
         .allow_external_subcommands(true)
@@ -58,6 +59,7 @@ fn main() -> Result<()> {
 
     let matches = cli().get_matches();
     let command = wpe::API::new();
+    let headless = matches.get_one::<bool>("headless");
 
     // Handle logic for each command.
     match matches.subcommand() {
@@ -75,27 +77,35 @@ fn main() -> Result<()> {
                 }
 
             }
+
+            
+
             // Fetch sites and display results. Will also show paginated results.
             let next = command.get_sites(Some(page_num)).unwrap();
             let results = next["results"].as_array().unwrap();
 
-            // Handle selection logic
-            let selection = Select::with_theme(&ColorfulTheme::default())
-                .with_prompt("Select a site to view...")
-                .items(&results
-                    .iter()
-                    .map(|x| &x["name"])
-                    .collect::<Vec<&serde_json::Value>>()
-                )
-                .interact()
-                .unwrap();
+            if *headless.unwrap() {
+                println!("{:?}", serde_json::to_string_pretty(results)?);
+            } else {
 
-            let item = &results[selection]["id"];
-            let site = command.get_site_by_id(
-                &item.as_str().unwrap()
-            ).unwrap();
+                // Handle selection logic
+                let selection = Select::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Select a site to view...")
+                    .items(&results
+                           .iter()
+                           .map(|site| &site["name"])
+                           .collect::<Vec<&serde_json::Value>>()
+                          )
+                    .interact()
+                    .unwrap();
 
-            println!("Selection: {}", serde_json::to_string_pretty(&site)?);
+                let item = &results[selection]["id"];
+                let site = command.get_site_by_id(
+                    &item.as_str().unwrap()
+                    ).unwrap();
+
+                println!("Selection: {}", serde_json::to_string_pretty(&site)?);
+            }
         },
         // Handles [site] command logic.
         Some(("site", sub_m)) => {
