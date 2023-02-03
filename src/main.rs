@@ -78,8 +78,6 @@ fn main() -> Result<()> {
 
             }
 
-            
-
             // Fetch sites and display results. Will also show paginated results.
             let next = command.get_sites(Some(page_num)).unwrap();
             let results = next["results"].as_array().unwrap();
