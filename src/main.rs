@@ -85,7 +85,8 @@ fn main() -> Result<()> {
             let results = next["results"].as_array().unwrap();
 
             if let Some(true) = headless {
-                println!("{}", serde_json::to_string_pretty(results)?);
+                let r = serde_json::to_string_pretty(results)?;
+                println!("{}", &r);
             } else {
 
                 // Handle selection logic
