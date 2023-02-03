@@ -84,7 +84,7 @@ fn main() -> Result<()> {
             let next = command.get_sites(Some(page_num)).unwrap();
             let results = next["results"].as_array().unwrap();
 
-            if *headless.unwrap() {
+            if let Some(true) = headless {
                 println!("{}", serde_json::to_string_pretty(results)?);
             } else {
 
@@ -130,8 +130,9 @@ fn main() -> Result<()> {
             let next = command.get_accounts(Some(page_num)).unwrap();
             let results = next["results"].as_array().unwrap();
             
-            if *headless.unwrap() {
-                println!("{}", serde_json::to_string_pretty(results)?);
+            if let Some(true) = headless {
+                let r = serde_json::to_string_pretty(results)?;
+                println!("{}", &r);
             } else {
                 let selection = Select::with_theme(&ColorfulTheme::default())
                     .with_prompt("Select a site to view...")
