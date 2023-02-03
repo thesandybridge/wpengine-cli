@@ -168,7 +168,7 @@ fn main() -> Result<()> {
                 Some(("reset", _)) => {
                     wpe::reset()?;
                 },
-                _ => {}
+                _ => println!("Error with auth command.")
             }
         },
         // This endpoint will report the system status and any outages that might be occurring.
