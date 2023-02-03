@@ -85,7 +85,7 @@ fn main() -> Result<()> {
             let results = next["results"].as_array().unwrap();
 
             if *headless.unwrap() {
-                println!("{:?}", serde_json::to_string_pretty(results)?);
+                println!("{}", serde_json::to_string_pretty(results)?);
             } else {
 
                 // Handle selection logic
@@ -129,23 +129,27 @@ fn main() -> Result<()> {
             // Fetch sites and display results. Will also show paginated results.
             let next = command.get_accounts(Some(page_num)).unwrap();
             let results = next["results"].as_array().unwrap();
-                    
-            let selection = Select::with_theme(&ColorfulTheme::default())
-                .with_prompt("Select a site to view...")
-                .items(&results
-                    .iter()
-                    .map(|x| &x["name"])
-                    .collect::<Vec<&serde_json::Value>>()
-                )
-                .interact()
-                .unwrap();
+            
+            if *headless.unwrap() {
+                println!("{}", serde_json::to_string_pretty(results)?);
+            } else {
+                let selection = Select::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Select a site to view...")
+                    .items(&results
+                           .iter()
+                           .map(|account| &account["name"])
+                           .collect::<Vec<&serde_json::Value>>()
+                          )
+                    .interact()
+                    .unwrap();
 
-            let item = &results[selection]["id"];
-            let site = command.get_account_by_id(
-                &item.as_str().unwrap()
-            ).unwrap();
+                let item = &results[selection]["id"];
+                let account = command.get_account_by_id(
+                    &item.as_str().unwrap()
+                    ).unwrap();
 
-            println!("Selection: {}", serde_json::to_string_pretty(&site)?);
+                println!("Selection: {}", serde_json::to_string_pretty(&account)?);
+            }
         },
         // Handles [site] command logic.
         Some(("account", sub_m)) => {
