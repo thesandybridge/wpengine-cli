@@ -474,5 +474,62 @@ impl API {
 
         Ok(res)
     }
+
+    pub fn get_domains(&self, id: &str,  page: Option<i32>) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self 
+            .client
+            .get(&format!("{}/installs/{}/domains?offset={}", &self.config.wpengine_api, id, page.unwrap_or(0) * 100))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
+    pub fn get_domain_by_id(&self, install_id: &str, domain_id: &str) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self 
+            .client
+            .get(&format!("{}/installs/{}/domains/{}", &self.config.wpengine_api, install_id, domain_id))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
+    pub fn add_domain(&self, id: &str, domain: &Domain) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .post(&format!("{}/installs/{}/domains", &self.config.wpengine_api, id))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .json(domain)
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
+    pub fn delete_domain(&self, install_id: &str, domain_id: &str) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .delete(&format!("{}/installs/{}/domains/{}", &self.config.wpengine_api, install_id, domain_id))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
 }
 
