@@ -3,6 +3,13 @@ use clap::ArgMatches;
 use anyhow::Result;
 use wpe::API;
 
+/// Handles logic for the accounts command.
+///
+/// # Arguments
+///
+/// * `sub_n` - &ArgMatches
+/// * `command` - API
+/// * `headless` - Option<&bool>
 pub fn handle_accounts(sub_n: &ArgMatches, command: API, headless: Option<&bool>) -> Result<()> {
     let page = sub_n.get_one::<String>("PAGE");
     let page_num: i32;

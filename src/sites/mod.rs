@@ -3,6 +3,13 @@ use clap::ArgMatches;
 use anyhow::Result;
 use wpe::API;
 
+/// Provides logic for the sites command.
+///
+/// # Arguments
+///
+/// * `sub_n` - &ArgMatches
+/// * `command` - API
+/// * `headless` - Option<&bool>
 pub fn handle_sites(sub_n: &ArgMatches, command: API, headless: Option<&bool>) -> Result<()> {
     let page = sub_n.get_one::<String>("PAGE");
     let page_num: i32;
