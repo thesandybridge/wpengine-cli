@@ -100,6 +100,7 @@ pub fn init() -> Result<()> {
     Ok(())
 }
 
+#[derive(Serialize, Deserialize, Debug)]
 enum Environment {
     production,
     staging,
@@ -111,11 +112,13 @@ pub struct API {
     config: Config,
 }
 
+#[derive(Serialize, Deserialize, Default, Debug)]
 pub struct Site {
     name: String,
     account_id: String
 }
 
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Install {
     name: String,
     account_id: String,
@@ -123,6 +126,7 @@ pub struct Install {
     environment: Environment
 }
 
+#[derive(Serialize, Deserialize, Default, Debug)]
 struct User {
     account_id: String,
     first_name: String,
@@ -132,15 +136,18 @@ struct User {
     install_ids: Vec<String>
 }
 
+#[derive(Serialize, Deserialize, Default, Debug)]
 pub struct AccountUser {
     user: User
 }
 
+#[derive(Serialize, Deserialize, Default, Debug)]
 pub struct Domain {
     name: String,
     primary: bool
 }
 
+#[derive(Serialize, Deserialize, Default, Debug)]
 pub struct SSHKey {
     public_key: String
 }
@@ -192,6 +199,22 @@ impl API {
                 &self.config.wpengine_user_id, 
                 Some(&self.config.wpengine_password)
             )
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
+    /// Try to add a site.
+    pub fn add_site(&self, site: &Site) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .post(&format!("{}/sites", &self.config.wpengine_api))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .json(site)
             .send()?
             .json::<serde_json::Value>()?;
 
