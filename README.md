@@ -6,6 +6,8 @@ I have also opted to not use async which will speed up performance.
 The purpose of this tool is to provide an interface with the wpengine API. I plan on creating a headless
 version of the tool to be implemented as part of a pipeline or other similar use case.
 
+[wpengine API reference](https://wpengineapi.com/reference)
+
 ## Installation
 
 ## Authentication
