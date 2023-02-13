@@ -221,6 +221,21 @@ impl API {
         Ok(res)
     }
 
+    /// Try to delete a specific install.
+    pub fn delete_site(&self, id: &str ) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .delete(&format!("{}/sites/{}", &self.config.wpengine_api, id))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
     /// Get all installs from wpengine. Pass an optional page number to show more results.
     pub fn get_installs(&self, page: Option<i32>) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
         let res = self
@@ -261,6 +276,21 @@ impl API {
                 Some(&self.config.wpengine_password)
             )
             .json(install)
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+    
+    /// Try to delete a specific install.
+    pub fn delete_install(&self, id: &str ) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .delete(&format!("{}/installs/{}", &self.config.wpengine_api, id))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
             .send()?
             .json::<serde_json::Value>()?;
 
@@ -307,6 +337,21 @@ impl API {
                 Some(&self.config.wpengine_password)
             )
             .json(user)
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
+    /// Try to delete a user from an account.
+    pub fn delete_user(&self, account_id: &str, user_id: &str ) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .delete(&format!("{}/accounts/{}/account_users/{}", &self.config.wpengine_api, account_id, user_id))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
             .send()?
             .json::<serde_json::Value>()?;
 
