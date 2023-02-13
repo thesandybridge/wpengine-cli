@@ -102,9 +102,9 @@ pub fn init() -> Result<()> {
 
 #[derive(Serialize, Deserialize, Debug)]
 enum Environment {
-    production,
-    staging,
-    development
+    Production,
+    Staging,
+    Development
 }
 
 pub struct API {
