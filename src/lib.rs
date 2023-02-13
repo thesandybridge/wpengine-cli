@@ -100,9 +100,49 @@ pub fn init() -> Result<()> {
     Ok(())
 }
 
+enum Environment {
+    production,
+    staging,
+    development
+}
+
 pub struct API {
     client: reqwest::blocking::Client,
     config: Config,
+}
+
+pub struct Site {
+    name: String,
+    account_id: String
+}
+
+pub struct Install {
+    name: String,
+    account_id: String,
+    site_id: String,
+    environment: Environment
+}
+
+struct User {
+    account_id: String,
+    first_name: String,
+    last_name: String,
+    email: String,
+    roles: String,
+    install_ids: Vec<String>
+}
+
+pub struct AccountUser {
+    user: User
+}
+
+pub struct Domain {
+    name: String,
+    primary: bool
+}
+
+pub struct SSHKey {
+    public_key: String
 }
 
 impl API {
