@@ -475,6 +475,7 @@ impl API {
         Ok(res)
     }
 
+    /// Get domains from an install
     pub fn get_domains(&self, id: &str,  page: Option<i32>) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
         let res = self 
             .client
