@@ -157,6 +157,12 @@ pub struct Cache {
     r#type: String
 }
 
+#[derive(Serialize, Deserialize, Default, Debug)]
+pub struct Backup {
+    description: String,
+    notification_emails: Vec<String>
+}
+
 impl API {
     /// Creates a new reqwest client instance
     pub fn new() -> Self {
@@ -303,6 +309,36 @@ impl API {
 
         Ok(res)
     }
+
+    pub fn backup(&self, id: &str, backup: &Backup) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .post(&format!("{}/installs/{}/backups", &self.config.wpengine_api, id))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .json(backup)
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
+    pub fn get_backup(&self, install_id: &str, backup_id: &str) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .get(&format!("{}/installs/{}/backups/{}", &self.config.wpengine_api, install_id, backup_id))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
     /// Try to delete a specific install.
     pub fn delete_install(&self, id: &str ) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
         let res = self
