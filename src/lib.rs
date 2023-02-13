@@ -312,6 +312,20 @@ impl API {
         Ok(res)
     }
 
+    /// Get the currently authenticated user's account details.
+    pub fn get_user(&self) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self 
+            .client
+            .get(&format!("{}/user", &self.config.wpengine_api))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
     /// List account by ID.
     pub fn get_account_by_id(&self, id: &str) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
         let res = self
