@@ -29,4 +29,4 @@ The `sites` command will allow you to list, add, update, or delete existing site
 - [ ] Add bulk edit options.
 - [ ] Integrate WordPress CLI. e.g: Updating WordPress Sites
 - [ ] Complete all WP Engine API endpoints
-- [ ] Implement headless version so that the tool can be used in pipelines
+- [x] Implement headless version so that the tool can be used in pipelines
