@@ -357,5 +357,51 @@ impl API {
 
         Ok(res)
     }
+
+    /// Get a list of ssh keys for authorized user.
+    pub fn get_ssh_keys(&self, page: Option<i32>) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self 
+            .client
+            .get(&format!("{}/ssh_keys?offset={}", &self.config.wpengine_api, page.unwrap_or(0) * 100))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
+    /// Add an ssh key to the authorized users account.
+    pub fn add_ssh_key(&self, ssh_key: &SSHKey) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .post(&format!("{}/ssh_keys", &self.config.wpengine_api))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .json(ssh_key)
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
+    /// Delete an ssh key from the authorized users account.
+    pub fn delete_ssh_key(&self, id: &str) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .delete(&format!("{}/ssh_keys/{}", &self.config.wpengine_api, id))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
 }
 
