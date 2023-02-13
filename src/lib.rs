@@ -221,6 +221,52 @@ impl API {
         Ok(res)
     }
 
+    /// Get all installs from wpengine. Pass an optional page number to show more results.
+    pub fn get_installs(&self, page: Option<i32>) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .get(&format!("{}/installs?offset={}", &self.config.wpengine_api, page.unwrap_or(0) * 100))
+            .basic_auth(
+                &self.config.wpengine_user_id, 
+                Some(&self.config.wpengine_password)
+            )
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
+    /// Get a single install by its ID from the wpengine API
+    pub fn get_install_by_id(&self, id: &str) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .get(&format!("{}/installs/{}", &self.config.wpengine_api,  id))
+            .basic_auth(
+                &self.config.wpengine_user_id, 
+                Some(&self.config.wpengine_password)
+            )
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
+    /// Try to add an install instance.
+    pub fn add_install(&self, install: &Install) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .post(&format!("{}/installs", &self.config.wpengine_api))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .json(install)
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
     /// List all accounts, optional page offset.
     pub fn get_accounts(&self, page: Option<i32>) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
         let res = self 
@@ -245,6 +291,22 @@ impl API {
                 &self.config.wpengine_user_id, 
                 Some(&self.config.wpengine_password)
             )
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
+    /// Add a user to a specific account.
+    pub fn add_user(&self, id: &str, user: &AccountUser) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .post(&format!("{}/accounts/{}/account_users", &self.config.wpengine_api, id))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .json(user)
             .send()?
             .json::<serde_json::Value>()?;
 
