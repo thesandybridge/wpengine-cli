@@ -152,6 +152,11 @@ pub struct SSHKey {
     public_key: String
 }
 
+#[derive(Serialize, Deserialize, Default, Debug)]
+pub struct Cache {
+    r#type: String
+}
+
 impl API {
     /// Creates a new reqwest client instance
     pub fn new() -> Self {
@@ -281,7 +286,23 @@ impl API {
 
         Ok(res)
     }
-    
+
+    pub fn purge_cache(&self, id: &str, body: String) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .post(&format!("{}/installs/{}/purge_cache", &self.config.wpengine_api, id))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .json(&Cache {
+                r#type: body
+            })
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
     /// Try to delete a specific install.
     pub fn delete_install(&self, id: &str ) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
         let res = self
