@@ -10,7 +10,7 @@ use wpe::API;
 /// * `sub_n` - &ArgMatches
 /// * `command` - API
 /// * `headless` - Option<&bool>
-pub fn handle_sites(sub_n: &ArgMatches, command: API, headless: Option<&bool>) -> Result<()> {
+pub fn init(sub_n: &ArgMatches, command: API, headless: Option<&bool>) -> Result<()> {
     let page = sub_n.get_one::<String>("PAGE");
     let page_num: i32;
 

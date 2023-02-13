@@ -67,7 +67,7 @@ fn main() -> Result<()> {
     match matches.subcommand() {
         // Handles [sites] command logic.
         Some(("sites", sub_n)) => {
-            sites::handle_sites(sub_n, command, headless)?;
+            sites::init(sub_n, command, headless)?;
         },
         // Handles [site] command logic.
         Some(("site", sub_m)) => {
@@ -76,7 +76,7 @@ fn main() -> Result<()> {
             println!("{}", serde_json::to_string_pretty(&res)?);
         },
         Some(("accounts", sub_n)) => {
-            accounts::handle_accounts(sub_n, command, headless)?; 
+            accounts::init(sub_n, command, headless)?; 
         },
         // Handles [site] command logic.
         Some(("account", sub_m)) => {
