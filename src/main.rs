@@ -75,10 +75,11 @@ fn main() -> Result<()> {
             let res = command.get_site_by_id(id).unwrap();
             println!("{}", serde_json::to_string_pretty(&res)?);
         },
+        // Handles [accounts] command logic.
         Some(("accounts", sub_n)) => {
             accounts::init(sub_n, command, headless)?; 
         },
-        // Handles [site] command logic.
+        // Handles [account] command logic.
         Some(("account", sub_m)) => {
             let id = sub_m.get_one::<String>("ID").unwrap();
             let res = command.get_account_by_id(id).unwrap();
@@ -101,7 +102,7 @@ fn main() -> Result<()> {
             let status = command.status().unwrap();
             println!("{}", serde_json::to_string_pretty(&status)?)
         }
-        _ => println!("Invalid command. Please use <help> to see full list of commands.")
+        _ => println!("Invalid command. Please use <help> to a see full list of commands.")
     }
     Ok(())
 }
