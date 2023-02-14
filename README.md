@@ -18,7 +18,8 @@ You can also use the `auth` command to update the credentials or manually add th
 
 ## Sites
 
-The `sites` command will allow you to list, add, update, or delete existing sites.
+The `sites` command will allow you to list, add, update, or delete existing sites. Passing the 
+`-H` flag will enable headless mode for using the CLI in a pipeline or as part of a script.
 
 ## Installs
 
