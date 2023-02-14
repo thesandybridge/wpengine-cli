@@ -1,6 +1,6 @@
 # WP Engine CLI v2
 
-An improved version of my earlier tool. This version is build with Rust whereas the previous version was built using JavaScript with node.
+An improved version of my earlier tool. This version is built with Rust whereas the previous version was built using JavaScript with node.
 I have also opted to not use async which will speed up performance.
 
 The purpose of this tool is to provide an interface with the wpengine API. I plan on creating a headless
@@ -20,6 +20,9 @@ You can also use the `auth` command to update the credentials or manually add th
 
 The `sites` command will allow you to list, add, update, or delete existing sites. Passing the 
 `-H` flag will enable headless mode for using the CLI in a pipeline or as part of a script.
+
+Additionally, using the `site` (singular) command and passing an ID as 
+an argument will allow you to work with just one site.
 
 ## Installs
 
