@@ -86,9 +86,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                     account_id: accounts[account]["id"].as_str().unwrap().to_string()
                 };
 
-                println!("{}", serde_json::to_string_pretty(&data)?);
-
-                api.add_site(&data)?;
+                println!("{:?}", api.add_site(&data)?);
             },
             2 => {},
             3 => {},
