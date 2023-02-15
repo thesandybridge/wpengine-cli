@@ -43,8 +43,6 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
             .interact()
             .unwrap();
 
-        println!("{}", selection);
-
         match selection {
             0 => {
                 // Handle selection logic
@@ -64,6 +62,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                 println!("Selection: {}", serde_json::to_string_pretty(&site)?);
             },
             1 => {
+                println!("Follow the prompts to add a site.");
                 let site_name = Input::new()
                     .with_prompt("Enter a site name")
                     .interact()
