@@ -1,6 +1,7 @@
 use dialoguer::{
     Select,
     Input,
+    Confirm,
     theme::ColorfulTheme
 };
 use clap::ArgMatches;
@@ -86,7 +87,12 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                     account_id: accounts[account]["id"].as_str().unwrap().to_string()
                 };
 
-                println!("{:?}", api.add_site(&data)?);
+                let add_site = api.add_site(&data)?;
+
+                println!(
+                    "Successfully added site: {:?}", 
+                    serde_json::to_string_pretty(&add_site)?
+                );
             },
             2 => {},
             3 => {},
