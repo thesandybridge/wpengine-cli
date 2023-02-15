@@ -118,12 +118,23 @@ pub struct Site {
     account_id: String
 }
 
+#[derive(Serialize, Deserialize, Default, Debug)]
+pub struct SitePatch {
+    name: Option<String>,
+}
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Install {
     name: String,
     account_id: String,
     site_id: String,
     environment: Environment
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct InstallPatch {
+    site_id: Option<String>,
+    environment: Option<Environment>
 }
 
 #[derive(Serialize, Deserialize, Default, Debug)]
@@ -137,14 +148,31 @@ struct User {
 }
 
 #[derive(Serialize, Deserialize, Default, Debug)]
+struct UserPatch {
+    roles: Option<String>,
+    install_ids: Option<Vec<String>>
+}
+
+#[derive(Serialize, Deserialize, Default, Debug)]
 pub struct AccountUser {
     user: User
+}
+
+#[derive(Serialize, Deserialize, Default, Debug)]
+pub struct AccountUserPatch {
+    user: UserPatch
 }
 
 #[derive(Serialize, Deserialize, Default, Debug)]
 pub struct Domain {
     name: String,
     primary: bool
+}
+
+#[derive(Serialize, Deserialize, Default, Debug)]
+pub struct DomainPatch {
+    primary: Option<bool>,
+    redirect_to: Option<String>
 }
 
 #[derive(Serialize, Deserialize, Default, Debug)]
@@ -217,7 +245,7 @@ impl API {
     }
 
     /// Try to add a site.
-    pub fn add_site(&self, site: &Site) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+    pub fn add_site(&self, body: &Site) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
         let res = self
             .client
             .post(&format!("{}/sites", &self.config.wpengine_api))
@@ -225,7 +253,23 @@ impl API {
                 &self.config.wpengine_user_id,
                 Some(&self.config.wpengine_password)
             )
-            .json(site)
+            .json(body)
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
+    pub fn update_site(&self, id: &str, body: &SitePatch) 
+        -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .patch(&format!("{}/sites/{}", &self.config.wpengine_api, id))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .json(body)
             .send()?
             .json::<serde_json::Value>()?;
 
@@ -278,7 +322,7 @@ impl API {
     }
 
     /// Try to add an install instance.
-    pub fn add_install(&self, install: &Install) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+    pub fn add_install(&self, body: &Install) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
         let res = self
             .client
             .post(&format!("{}/installs", &self.config.wpengine_api))
@@ -286,7 +330,23 @@ impl API {
                 &self.config.wpengine_user_id,
                 Some(&self.config.wpengine_password)
             )
-            .json(install)
+            .json(body)
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
+    pub fn update_install(&self, install_id: &str, body: &InstallPatch) 
+        -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .patch(&format!("{}/installs/{}", &self.config.wpengine_api, install_id))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .json(body)
             .send()?
             .json::<serde_json::Value>()?;
 
@@ -414,6 +474,22 @@ impl API {
         Ok(res)
     }
 
+    pub fn update_user(&self, account_id: &str, user_id: &str, body: &AccountUserPatch) 
+        -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .patch(&format!("{}/accounts/{}/account_users/{}", &self.config.wpengine_api, account_id, user_id))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .json(body)
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
     /// Try to delete a user from an account.
     pub fn delete_user(&self, account_id: &str, user_id: &str ) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
         let res = self
@@ -513,6 +589,22 @@ impl API {
                 Some(&self.config.wpengine_password)
             )
             .json(domain)
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
+    pub fn update_domain(&self, install_id: &str, domain_id: &str, data: &DomainPatch) 
+        -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .patch(&format!("{}/installs/{}/domains/{}", &self.config.wpengine_api, install_id, domain_id))
+            .basic_auth(
+                &self.config.wpengine_user_id,
+                Some(&self.config.wpengine_password)
+            )
+            .json(data)
             .send()?
             .json::<serde_json::Value>()?;
 
