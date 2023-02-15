@@ -89,11 +89,43 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                 let add_site = api.add_site(&data)?;
 
                 println!(
-                    "Successfully added site: {:?}", 
+                    "Successfully added site: {}", 
                     serde_json::to_string_pretty(&add_site)?
                 );
             },
-            2 => {},
+            2 => {
+                let site_slection = Select::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Select a site to update.")
+                    .items(&results
+                           .iter()
+                           .map(|site| &site["name"])
+                           .collect::<Vec<&serde_json::Value>>()
+                          )
+                    .interact()
+                    .unwrap();
+
+                let site = &results[site_slection]["id"].as_str().unwrap().to_string();
+                let site_name: String = Input::new()
+                    .with_prompt("Enter a site name")
+                    .interact()
+                    .unwrap();
+
+                if site_name.is_empty() {
+                    println!("cancelling, no value provided.");
+                } else {
+                    let data = wpe::SitePatch {
+                        name: Some(site_name),
+                    };
+
+                    let update_site = api.update_site(site, &data)?;
+                    println!(
+                        "Successfully update site: {}",
+                        serde_json::to_string_pretty(&update_site)?
+                    );
+
+                }
+                
+            },
             3 => {},
             _ => println!("An error occured with your selection")
         }

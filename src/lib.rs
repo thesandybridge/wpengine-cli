@@ -120,7 +120,7 @@ pub struct Site {
 
 #[derive(Serialize, Deserialize, Default, Debug)]
 pub struct SitePatch {
-    name: Option<String>,
+    pub name: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -276,6 +276,7 @@ impl API {
 
     pub fn update_site(&self, id: &str, body: &SitePatch) 
         -> Result<serde_json::Value, anyhow::Error> {
+
         let res = self
             .client
             .patch(&format!("{}/sites/{}", &self.config.wpengine_api, id))
