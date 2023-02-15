@@ -488,6 +488,20 @@ impl API {
         Ok(res)
     }
 
+    pub fn get_user_by_id(&self, account_id: &str, user_id: &str) -> Result<serde_json::Value, Box<dyn std::error::Error>> {
+        let res = self
+            .client
+            .get(&format!("{}/accounts/{}/account_users/{}", &self.config.wpengine_api, account_id, user_id))
+            .basic_auth(
+                &self.config.wpengine_user_id, 
+                Some(&self.config.wpengine_password)
+            )
+            .send()?
+            .json::<serde_json::Value>()?;
+
+        Ok(res)
+    }
+
     pub fn update_user(&self, account_id: &str, user_id: &str, body: &AccountUserPatch) 
         -> Result<serde_json::Value, Box<dyn std::error::Error>> {
         let res = self
