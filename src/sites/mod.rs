@@ -134,7 +134,30 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                 }
                 
             },
-            3 => {},
+            3 => {
+                let site_slection = Select::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Select a site to update.")
+                    .items(&results
+                           .iter()
+                           .map(|site| &site["name"])
+                           .collect::<Vec<&serde_json::Value>>()
+                          )
+                    .interact()
+                    .unwrap();
+
+                let site = &results[site_slection]["id"].as_str().unwrap().to_string();
+                if Confirm::new().with_prompt("Does this data look right?").interact()? {
+
+                        // Need to do something better to handle optional values.
+                        api.delete_site(site)?;
+                        println!("Site deleted!");
+
+                    } else {
+                        println!("Cancelling.");
+                    }
+
+
+            },
             _ => println!("An error occured with your selection")
         }
 
