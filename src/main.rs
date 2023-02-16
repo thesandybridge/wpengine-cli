@@ -68,6 +68,10 @@ fn cli() -> Command {
             Command::new("status")
                 .about("Get API status")
         )
+        .subcommand(
+            Command::new("swagger")
+                .about("Get API swagger")
+        )
 }
 
 fn main() -> Result<()> {
@@ -80,21 +84,20 @@ fn main() -> Result<()> {
 
     // Handle logic for each command.
     match matches.subcommand() {
-        // Handles [sites] command logic.
         Some(("sites", sub_n)) => {
+            // Initialize [sites] command logic.
             sites::init(sub_n, command, headless)?;
         },
-        // Handles [accounts] command logic.
         Some(("accounts", sub_n)) => {
+            // Initialize [accounts] command logic.
             accounts::init(sub_n, command, headless)?; 
         },
-        // Handles [account] command logic.
         Some(("account", sub_m)) => {
+            // This will eventually be moved to the [accounts] command.
             let id = sub_m.get_one::<String>("ID").unwrap();
-            let res = command.get_account_by_id(id).unwrap();
+            let res = command.get_account_by_id(id)?;
             println!("{}", serde_json::to_string_pretty(&res)?);
         },
-        // Handles [auth] command logic.
         Some(("auth", sub_m)) => {
             match sub_m.subcommand() {
                 Some(("login", _)) => {
@@ -106,10 +109,17 @@ fn main() -> Result<()> {
                 _ => println!("Error with auth command.")
             }
         },
-        // This endpoint will report the system status and any outages that might be occurring.
         Some(("status", _)) => {
-            let status = command.status().unwrap();
+            // This endpoint will report the system status 
+            // and any outages that might be occurring.
+            let status = command.status()?;
             println!("{}", serde_json::to_string_pretty(&status)?)
+        },
+        Some(("swagger", _)) => {
+            // This endpoint will report the system status 
+            // and any outages that might be occurring.
+            let swagger = command.swagger()?;
+            println!("{}", serde_json::to_string_pretty(&swagger)?)
         }
         _ => println!("Invalid command. Please use <help> to a see full list of commands.")
     }

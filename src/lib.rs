@@ -203,7 +203,7 @@ impl API {
     pub fn status(&self) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
-            .get(&format!("{}/swagger", &self.config.wpengine_api))
+            .get(&format!("{}/status", &self.config.wpengine_api))
             .basic_auth(
                 &self.config.wpengine_user_id, 
                 Some(&self.config.wpengine_password)
@@ -217,7 +217,7 @@ impl API {
     pub fn swagger(&self) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
-            .get(&format!("{}/status", &self.config.wpengine_api))
+            .get(&format!("{}/swagger", &self.config.wpengine_api))
             .basic_auth(
                 &self.config.wpengine_user_id, 
                 Some(&self.config.wpengine_password)
