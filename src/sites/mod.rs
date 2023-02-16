@@ -107,22 +107,30 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                 let site = &results[site_slection]["id"].as_str().unwrap().to_string();
                 let site_name: String = Input::new()
                     .with_prompt("Enter a site name")
+                    .allow_empty(true)
                     .interact()
                     .unwrap();
 
                 if site_name.is_empty() {
                     println!("cancelling, no value provided.");
+
                 } else {
-                    let data = wpe::SitePatch {
-                        name: Some(site_name),
-                    };
+                    if Confirm::new().with_prompt("Does this data look right?").interact()? {
 
-                    let update_site = api.update_site(site, &data)?;
-                    println!(
-                        "Successfully update site: {}",
-                        serde_json::to_string_pretty(&update_site)?
-                    );
+                        // Need to do something better to handle optional values.
+                        let data = wpe::SitePatch {
+                            name: Some(site_name)
+                        };
 
+                        let update_site = api.update_site(site, &data)?;
+                        println!(
+                            "Successfully update site: {}",
+                            serde_json::to_string_pretty(&update_site)?
+                            );
+
+                    } else {
+                        init(sub_n, api, headless)?;
+                    }
                 }
                 
             },
