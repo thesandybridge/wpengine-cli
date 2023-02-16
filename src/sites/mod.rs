@@ -47,11 +47,25 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
 
                 println!("{}", serde_json::to_string_pretty(&add_site)?);
             },
-            Some(("update", sub)) => {},
-            Some(("delete", sub)) => {},
+            Some(("update", sub)) => {
+                let name = sub.get_one::<String>("NAME").unwrap();
+                let id = sub.get_one::<String>("ID").unwrap();
+
+                let data = wpe::SitePatch {
+                    name: Some(name.to_string()) 
+                };
+
+                let update_site = api.update_site(id, &data)?;
+
+                println!("{}", serde_json::to_string_pretty(&update_site)?);
+            },
+            Some(("delete", sub)) => {
+                let id = sub.get_one::<String>("ID").unwrap();
+
+                api.delete_site(id)?;
+            },
             _ => {
-                let r = serde_json::to_string_pretty(results)?;
-                println!("{}", &r);
+                println!("{}", serde_json::to_string_pretty(results)?);
             }
         }
     } else {

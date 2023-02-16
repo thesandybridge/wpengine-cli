@@ -23,6 +23,17 @@ fn cli() -> Command {
                         .arg(arg!(<NAME> "Site name").required(true))
                         .arg(arg!(<ID> "Account ID").required(true))
                 )
+                .subcommand(
+                    Command::new("update")
+                        .about("Update the name of a site.")
+                        .arg(arg!(<NAME> "Site name").required(true))
+                        .arg(arg!(<ID> "Site ID").required(true))
+                )
+                .subcommand(
+                    Command::new("delete")
+                        .about("Delete a site.")
+                        .arg(arg!(<ID> "Site ID").required(true))
+                )
         )
         .subcommand(
             Command::new("site")
