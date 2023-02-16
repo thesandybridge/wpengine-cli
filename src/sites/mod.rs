@@ -58,11 +58,11 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                 println!("{}", serde_json::to_string_pretty(&add_site)?);
             },
             Some(("update", sub)) => {
-                let name = sub.get_one::<String>("NAME").unwrap();
+                let name = sub.get_one::<String>("NAME");
                 let id = sub.get_one::<String>("ID").unwrap();
 
                 let data = wpe::SitePatch {
-                    name: Some(name.to_string()) 
+                    name: name.cloned()
                 };
 
                 let update_site = api.update_site(id, &data)?;
@@ -79,13 +79,12 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
             }
         }
     } else {
-
+        // Handle logic for when headless mode is not enabled
         let options = vec!["List All", "Add site", "Update Site", "Delete Site"];
         let selection = Select::with_theme(&ColorfulTheme::default())
             .with_prompt("Choose an option")
             .items(&options)
-            .interact()
-            .unwrap();
+            .interact()?;
 
         match selection {
             0 => {
@@ -97,8 +96,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                            .map(|site| &site["name"])
                            .collect::<Vec<&serde_json::Value>>()
                           )
-                    .interact()
-                    .unwrap();
+                    .interact()?;
 
                 let item = &results[site_slection]["id"];
                 let site = api.get_site_by_id(&item.as_str().unwrap())?;
@@ -109,8 +107,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                 println!("Follow the prompts to add a site.");
                 let site_name = Input::new()
                     .with_prompt("Enter a site name")
-                    .interact()
-                    .unwrap();
+                    .interact()?;
 
                 let accounts_results = api.get_accounts(Some(0))?;
                 let accounts = accounts_results["results"].as_array().unwrap(); 
@@ -122,8 +119,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                            .map(|acc| &acc["name"])
                            .collect::<Vec<&serde_json::Value>>()
                     )
-                    .interact()
-                    .unwrap();
+                    .interact()?;
 
                 let data = wpe::Site {
                     name: site_name,
@@ -145,15 +141,13 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                            .map(|site| &site["name"])
                            .collect::<Vec<&serde_json::Value>>()
                           )
-                    .interact()
-                    .unwrap();
+                    .interact()?;
 
                 let site = &results[site_slection]["id"].as_str().unwrap().to_string();
                 let site_name: String = Input::new()
                     .with_prompt("Enter a site name")
                     .allow_empty(true)
-                    .interact()
-                    .unwrap();
+                    .interact()?;
 
                 if site_name.is_empty() {
                     println!("cancelling, no value provided.");
@@ -187,8 +181,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                            .map(|site| &site["name"])
                            .collect::<Vec<&serde_json::Value>>()
                           )
-                    .interact()
-                    .unwrap();
+                    .interact()?;
 
                 let site = &results[site_slection]["id"].as_str().unwrap().to_string();
                 if Confirm::new().with_prompt("Does this data look right?").interact()? {
