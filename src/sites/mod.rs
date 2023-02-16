@@ -148,7 +148,6 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                 let site = &results[site_slection]["id"].as_str().unwrap().to_string();
                 if Confirm::new().with_prompt("Does this data look right?").interact()? {
 
-                        // Need to do something better to handle optional values.
                         api.delete_site(site)?;
                         println!("Site deleted!");
 
