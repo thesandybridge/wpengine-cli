@@ -21,8 +21,18 @@ You can also use the `auth` command to update the credentials or manually add th
 The `sites` command will allow you to list, add, update, or delete existing sites. Passing the 
 `-H` flag will enable headless mode for using the CLI in a pipeline or as part of a script.
 
+Headless mode will enable add, update, and delete sub commands. 
+
 Additionally, using the `site` (singular) command and passing an ID as 
-an argument will allow you to work with just one site.
+an argument will list one site.
+
+**Examples**
+
+```bash
+wpe -H sites add <NAME> <Account_ID>
+
+```
+
 
 ## Installs
 

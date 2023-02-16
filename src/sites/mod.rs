@@ -32,8 +32,18 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
     let next = api.get_sites(Some(page_num))?;
     let results = next["results"].as_array().unwrap();
 
+    // Check for headless mode.
     if let Some(true) = headless {
         match sub_n.subcommand() {
+            Some(("list", sub)) => {
+                if let Some(id) = sub.get_one::<String>("ID") {
+                    let site = api.get_site_by_id(id)?;
+                    println!("{}", serde_json::to_string_pretty(&site)?);
+
+                } else {
+                    println!("{}", serde_json::to_string_pretty(results)?);
+                }
+            },
             Some(("add", sub)) => {
                 let name = sub.get_one::<String>("NAME").unwrap();
                 let id = sub.get_one::<String>("ID").unwrap();
