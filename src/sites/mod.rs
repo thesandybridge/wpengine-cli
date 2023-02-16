@@ -88,7 +88,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
 
         match selection {
             0 => {
-                // Handle selection logic
+                // Handle logic for listing sites.
                 let site_slection = Select::with_theme(&ColorfulTheme::default())
                     .with_prompt("Select a site to view...")
                     .items(&results
@@ -104,6 +104,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                 println!("Selection: {}", serde_json::to_string_pretty(&site)?);
             },
             1 => {
+                // Logic for adding a site.
                 println!("Follow the prompts to add a site.");
                 let site_name = Input::new()
                     .with_prompt("Enter a site name")
@@ -134,6 +135,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                 );
             },
             2 => {
+                // Logic for updating a site.
                 let site_slection = Select::with_theme(&ColorfulTheme::default())
                     .with_prompt("Select a site to update.")
                     .items(&results
@@ -174,6 +176,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                 
             },
             3 => {
+                // Logic for deleting a site.
                 let site_slection = Select::with_theme(&ColorfulTheme::default())
                     .with_prompt("Select a site to update.")
                     .items(&results
@@ -192,13 +195,9 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                     } else {
                         println!("Cancelling.");
                     }
-
-
             },
             _ => println!("An error occured with your selection")
         }
-
-
         
     }
     Ok(())
