@@ -41,13 +41,6 @@ fn cli() -> Command {
                 )
         )
         .subcommand(
-            Command::new("site")
-                .about("Fetch a site by its ID.")
-                .arg(arg!(<ID> "The site ID"))
-                .arg_required_else_help(true)
-                .after_help("This command is a headless alternative to the selection dialogue.")
-        )
-        .subcommand(
             Command::new("accounts")
                 .about("Fetch all sites from your wpengine account")
                 .arg(arg!(<PAGE> "The page number").required(false))
@@ -90,12 +83,6 @@ fn main() -> Result<()> {
         // Handles [sites] command logic.
         Some(("sites", sub_n)) => {
             sites::init(sub_n, command, headless)?;
-        },
-        // Handles [site] command logic.
-        Some(("site", sub_m)) => {
-            let id = sub_m.get_one::<String>("ID").unwrap();
-            let res = command.get_site_by_id(id).unwrap();
-            println!("{}", serde_json::to_string_pretty(&res)?);
         },
         // Handles [accounts] command logic.
         Some(("accounts", sub_n)) => {
