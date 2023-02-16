@@ -26,9 +26,11 @@ Headless mode will enable list, add, update, and delete sub commands.
 **Examples**
 
 ```bash
-wpe -H sites add <NAME> <Account_ID>
-wpe -H sites list
-wpe -H sites list <Site_ID>
+wpe -H sites add <NAME> <Account_ID> # adds a site with the name provided.
+wpe -H sites list # lists all sites for page 1.
+wpe -H sites 1 list # lists all sites for page 2.
+wpe -H sites list <Site_ID> # list a single site from page 1.
+wpe -H sites 1 list <Site_ID> # list a single site from page 2.
 ```
 
 
