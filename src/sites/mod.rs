@@ -129,6 +129,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                             );
 
                     } else {
+                        // Recursively call init to show prompts again.
                         init(sub_n, api, headless)?;
                     }
                 }
