@@ -33,9 +33,29 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
     let results = next["results"].as_array().unwrap();
 
     if let Some(true) = headless {
-        let r = serde_json::to_string_pretty(results)?;
-        println!("{}", &r);
+        match sub_n.subcommand() {
+            Some(("add", sub)) => {
+                let name = sub.get_one::<String>("NAME").unwrap();
+                let id = sub.get_one::<String>("ID").unwrap();
+
+                let data = wpe::Site {
+                    name: name.to_string(),
+                    account_id: id.to_string()
+                };
+                
+                let add_site = api.add_site(&data)?;
+
+                println!("{}", serde_json::to_string_pretty(&add_site)?);
+            },
+            Some(("update", sub)) => {},
+            Some(("delete", sub)) => {},
+            _ => {
+                let r = serde_json::to_string_pretty(results)?;
+                println!("{}", &r);
+            }
+        }
     } else {
+
         let options = vec!["List All", "Add site", "Update Site", "Delete Site"];
         let selection = Select::with_theme(&ColorfulTheme::default())
             .with_prompt("Choose an option")

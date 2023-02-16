@@ -17,6 +17,12 @@ fn cli() -> Command {
                 .about("Display list of sites as selection.")
                 .arg(arg!(<PAGE> "The page number").required(false))
                 .after_help("Selecting one will fetch the site and display more options.")
+                .subcommand(
+                    Command::new("add")
+                        .about("Add a site using headless mode")
+                        .arg(arg!(<NAME> "Site name").required(true))
+                        .arg(arg!(<ID> "Account ID").required(true))
+                )
         )
         .subcommand(
             Command::new("site")
