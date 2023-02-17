@@ -7,7 +7,7 @@ description = "A CLI tool for the wpengine API."
 homepage = "https://github.com/thesandybridge/wpengine_cli_v2"
 repository = "https://github.com/thesandybridge/wpengine_cli_v2"
 documentation = "https://github.com/thesandybridge/wpengine_cli_v2/blob/main/README.md"
-readme = "https://github.com/thesandybridge/wpengine_cli_v2/blob/main/README.md"
+readme = "README.md"
 
 [lib]
 name = "wpe"
