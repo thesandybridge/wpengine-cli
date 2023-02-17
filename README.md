@@ -10,6 +10,9 @@ version of the tool to be implemented as part of a pipeline or other similar use
 
 ## Installation
 
+You will need Rust installed in order to install this from Crates.io, however, on github there are binaries for Windows, Mac, and Linux that you can install.
+Those will not be automatically updated (right now). So you will need to manually install the new binary whenever I release a update.
+
 ## Authentication
 
 Running the CLI for the first time will prompt you to add a username and password for the wpengine API.
