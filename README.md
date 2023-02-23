@@ -47,5 +47,8 @@ wpe -H sites 1 list <Site_ID> # list a single site from page 2.
 
 - [ ] Add bulk edit options.
 - [ ] Integrate WordPress CLI. e.g: Updating WordPress Sites
-- [ ] Complete all WP Engine API endpoints
+- [ ] https://github.com/thesandybridge/wpengine_cli_v2/issues/7
+- [ ] https://github.com/thesandybridge/wpengine_cli_v2/issues/8
+- [ ] https://github.com/thesandybridge/wpengine_cli_v2/issues/4
+- [ ] https://github.com/thesandybridge/wpengine_cli_v2/issues/5
 - [x] Implement headless version so that the tool can be used in pipelines
