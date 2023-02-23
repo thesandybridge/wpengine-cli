@@ -50,10 +50,10 @@ wpe -H sites 1 list <Site_ID> # list a single site from page 2.
 
 ## Roadmap
 
-- [ ] Add bulk edit options.
+- [ ] [Build commands for User/Accounts endpoint](https://github.com/thesandybridge/wpengine_cli_v2/issues/5)
+- [ ] [Build commands for Domain endpoint](https://github.com/thesandybridge/wpengine_cli_v2/issues/8)
+- [ ] [Build commands for Installs endpoint](https://github.com/thesandybridge/wpengine_cli_v2/issues/4)
+- [ ] [Build commands for SSH endpoint](https://github.com/thesandybridge/wpengine_cli_v2/issues/6)
 - [ ] Integrate WordPress CLI. e.g: Updating WordPress Sites
-- [ ] https://github.com/thesandybridge/wpengine_cli_v2/issues/7
-- [ ] https://github.com/thesandybridge/wpengine_cli_v2/issues/8
-- [ ] https://github.com/thesandybridge/wpengine_cli_v2/issues/4
-- [ ] https://github.com/thesandybridge/wpengine_cli_v2/issues/5
+- [ ] Add bulk edit options.
 - [x] Implement headless version so that the tool can be used in pipelines
