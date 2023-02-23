@@ -1,6 +1,6 @@
-# WP Engine CLI v2
+# WP Engine CLI
 
-An improved version of my earlier tool. This version is built with Rust whereas the previous version was built using JavaScript with node.
+Built with Rust, this tool will allow you to control your sites, installs, users and more from your terminal or within a pipeline using headless mode.
 I have also opted to not use async which will speed up performance. I work on this in my spare time, features may be added and removed randomly until
 I push a version **1.0.0** release.
 
