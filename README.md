@@ -4,9 +4,6 @@ Built with Rust, this tool will allow you to control your sites, installs, users
 I have also opted to not use async which will speed up performance. I work on this in my spare time, features may be added and removed randomly until
 I push a version **1.0.0** release.
 
-The purpose of this tool is to provide an interface with the wpengine API. I plan on creating a headless
-version of the tool to be implemented as part of a pipeline or other similar use case.
-
 [wpengine API reference](https://wpengineapi.com/reference)
 
 > **Warning**
