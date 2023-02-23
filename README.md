@@ -4,6 +4,13 @@ Built with Rust, this tool will allow you to control your sites, installs, users
 I have also opted to not use async which will speed up performance. I work on this in my spare time, features may be added and removed randomly until
 I push a version **1.0.0** release.
 
+You may be wondering why does this need to exist. Well it is a two part answer...
+
+1. I wanted a project to build in Rust.
+2. I was tired of writing the same API calls over and over and I wanted something more concrete to use in my WordPress pipelines.
+
+I have some big goals for this tool and I hope you find it as useful as I do!
+
 [wpengine API reference](https://wpengineapi.com/reference)
 
 > **Warning**
