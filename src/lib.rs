@@ -41,7 +41,6 @@ fn authenticated() -> bool {
     if file.exists() {
         let toml = config.toml::<Config>().unwrap();
         let re = Regex::new(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$").unwrap();
-
         // check if username matches UUID format
         // need a better check here, should consider pinging the API for a 200.
         if re.is_match(&toml.wpengine_user_id) {
