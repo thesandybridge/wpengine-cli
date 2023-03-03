@@ -11,7 +11,7 @@ download_url=$(curl -s https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO
 | tr -d \" \
 | xargs)
 
-wget $download_url -O $LOCAL_PATH/$BINARY && chmod +x $LOCAL_PATH/$BINARY
+wget $download_url -O $LOCAL_PATH$BINARY && chmod +x $LOCAL_PATH$BINARY
 
 
 
