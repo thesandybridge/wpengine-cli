@@ -19,8 +19,21 @@ I have some big goals for this tool and I hope you find it as useful as I do!
 
 ## Installation
 
-You will need Rust installed in order to install this from Crates.io, however, on github there are binaries for Windows, Mac, and Linux that you can install.
-Those will not be automatically updated (right now). So you will need to manually install the new binary whenever I release a update.
+## Cargo
+
+You will need Rust installed in order to install this from Crates.io.
+
+```bash
+cargo install wpe
+```
+
+## Linux
+
+The downloaded file will be located in `~/.local/bin/`
+
+```bash
+curl -s https://tinyurl.com/thesandybridge-wpe | bash
+```
 
 ## Authentication
 
