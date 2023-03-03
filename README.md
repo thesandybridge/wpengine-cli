@@ -32,7 +32,7 @@ cargo install wpe
 The downloaded file will be located in `~/.local/bin/`
 
 ```bash
-curl -s https://thesandybridge.github.io/scripts/install.sh | bash -s wpengine-cli
+curl -s https://thesandybridge.github.io/scripts/install.sh | bash -s wpengine-cli wpe
 ```
 
 ## Authentication
