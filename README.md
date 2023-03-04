@@ -27,7 +27,7 @@ You will need Rust installed in order to install this from Crates.io.
 cargo install wpe
 ```
 
-## Linux
+## Linux & WSL
 
 The downloaded file will be located in `~/.local/bin/`
 
