@@ -1,6 +1,5 @@
 use clap::{arg, Command};
 use anyhow::Result;
-
 mod sites;
 mod accounts;
 
@@ -90,7 +89,7 @@ fn main() -> Result<()> {
         },
         Some(("accounts", sub_n)) => {
             // Initialize [accounts] command logic.
-            accounts::init(sub_n, command, headless)?; 
+            accounts::init(sub_n, command, headless)?;
         },
         Some(("account", sub_m)) => {
             // This will eventually be moved to the [accounts] command.
@@ -110,13 +109,13 @@ fn main() -> Result<()> {
             }
         },
         Some(("status", _)) => {
-            // This endpoint will report the system status 
+            // This endpoint will report the system status
             // and any outages that might be occurring.
             let status = command.status()?;
             println!("{}", serde_json::to_string_pretty(&status)?)
         },
         Some(("swagger", _)) => {
-            // This endpoint will report the system status 
+            // This endpoint will report the system status
             // and any outages that might be occurring.
             let swagger = command.swagger()?;
             println!("{}", serde_json::to_string_pretty(&swagger)?)
