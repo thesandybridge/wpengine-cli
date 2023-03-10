@@ -1,0 +1,25 @@
+[package]
+name = "wpe"
+version = "0.0.16"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "A CLI tool for the wpengine API."
+homepage = "https://github.com/thesandybridge/wpengine-cli"
+repository = "https://github.com/thesandybridge/wpengine-cli"
+readme = "README.md"
+keywords = ["cli", "search", "demo"]
+categories = ["command-line-utilities"]
+
+[lib]
+name = "wpe"
+
+[dependencies]
+home-config = { version = "0.6.0", features = ["json", "yaml", "toml", "hcl"] }
+serde = "1.0"
+serde_json = "1.0"
+regex = "1"
+reqwest = { version = "0.11.13", features= ["blocking", "json"]}
+clap = { version = "4.0.27", features = ["derive"] }
+dialoguer = "0.10.2"
+anyhow = "1.0"
+
