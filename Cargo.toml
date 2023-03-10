@@ -1,5 +1,5 @@
 [workspace]
 members = [
-    "wpengine-cli",
-    "wpengine-ui"
+    "wpe-cli",
+    "localwp-ui"
 ]
