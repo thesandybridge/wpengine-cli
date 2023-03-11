@@ -1,5 +1,5 @@
 [workspace]
 members = [
     "wpe-cli",
-    "localwp-ui"
+    "wpe-local"
 ]
