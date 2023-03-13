@@ -7,52 +7,37 @@ use dialoguer::{
 use clap::ArgMatches;
 use anyhow::Result;
 use wpe::API;
+use serde_json::Value;
 
 const ENV: [&str; 3] = ["development", "staging", "production"];
 
-fn get_install_data(api: &API) -> Result<(String, String, String, String)>{
-
-    let accounts_results = api.get_accounts(Some(0))?;
-    let accounts = accounts_results["results"].as_array().unwrap();
-
-    let account = Select::with_theme(&ColorfulTheme::default())
-        .with_prompt("Select an account")
-        .items(&accounts
-            .iter()
-            .map(|acc| &acc["name"])
-            .collect::<Vec<&serde_json::Value>>()
-        )
+fn get_install_data(results: &Vec<Value>, api: &API) -> Result<(String, String)>{
+    let site_selection = Select::with_theme(&ColorfulTheme::default())
+        .with_prompt("Select a site to update")
+        .items(&results
+               .iter()
+               .map(|i| &i["name"])
+               .collect::<Vec<&serde_json::Value>>()
+              )
         .interact()?;
 
-    let sites_results = api.get_sites(Some(1))?;
-    let sites = sites_results["results"].as_array().unwrap();
+    let site_id = results[site_selection]["id"].to_string();
 
-    let site = Select::with_theme(&ColorfulTheme::default())
-        .with_prompt("Select a site")
-        .items(&sites
-            .iter()
-            .map(|s| &s["name"])
-            .collect::<Vec<&serde_json::Value>>()
-        )
+    let selected_site = api.get_site_by_id(site_id)?;
+    let installs = selected_site["installs"].as_array().unwrap();
+
+    let install_selection = Select::with_theme(&ColorfulTheme::default())
+        .with_prompt("Select an Install")
+        .items(&installs
+               .iter()
+               .map(|i| &i["name"])
+               .collect::<Vec<&serde_json::Value>>()
+              )
         .interact()?;
 
-    let install: String = Input::new()
-        .with_prompt("Enter an install name")
-        .interact()?;
+    let install = installs[install_selection]["id"].to_string();
 
-    let environment = Select::with_theme(&ColorfulTheme::default())
-        .with_prompt("Select an environment")
-        .items(&ENV)
-        .interact()?;
-
-    println!("{}", &accounts[account]["id"]);
-
-    return Ok((
-        install,
-        accounts[account]["id"].as_str().unwrap().to_string(),
-        sites[site]["id"].as_str().unwrap().to_string(),
-        ENV[environment].to_string()
-    ));
+    return Ok((site_id, install));
 }
 
 /// Provides logic for the sites command.
@@ -118,14 +103,14 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                     environment: env.to_string()
                 };
 
-                let update_site = api.update_install(install_id, &data)?;
+                let update_site = api.update_install(install_id.to_string(), &data)?;
 
                 println!("{}", serde_json::to_string_pretty(&update_site)?);
             },
             Some(("delete", sub)) => {
                 let id = sub.get_one::<String>("ID").unwrap();
 
-                api.delete_install(id)?;
+                api.delete_install(id.to_string())?;
             },
             _ => {
                 println!("{}", serde_json::to_string_pretty(results)?);
@@ -157,16 +142,46 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                 println!("Selection: {}", serde_json::to_string_pretty(&install)?);
             },
             1 => {
-                // Logic for adding a site.
+                // Logic for adding an install to a site.
                 println!("Follow the prompts to add a install.");
-                let (install, account, site, env) = get_install_data(&api)?;
+                let accounts_results = api.get_accounts(Some(0))?;
+                let accounts = accounts_results["results"].as_array().unwrap();
+
+                let account = Select::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Select an account")
+                    .items(&accounts
+                           .iter()
+                           .map(|acc| &acc["name"])
+                           .collect::<Vec<&serde_json::Value>>()
+                          )
+                    .interact()?;
+
+                let sites_results = api.get_sites(Some(1))?;
+                let sites = sites_results["results"].as_array().unwrap();
+
+                let site = Select::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Select a site")
+                    .items(&sites
+                           .iter()
+                           .map(|s| &s["name"])
+                           .collect::<Vec<&serde_json::Value>>()
+                          )
+                    .interact()?;
+
+                let install: String = Input::new()
+                    .with_prompt("Enter an install name")
+                    .interact()?;
+
+                let environment = Select::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Select an environment")
+                    .items(&ENV)
+                    .interact()?;
 
                 let data = wpe::Install {
                     name: install,
-                    account_id: account,
-                    site_id: site,
-                    environment: env
-
+                    account_id: accounts[account]["id"].as_str().unwrap().to_string(),
+                    site_id: sites[site]["id"].as_str().unwrap().to_string(),
+                    environment: ENV[environment].to_string()
                 };
 
                 let add_install= api.add_install(&data)?;
@@ -178,30 +193,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
             },
             2 => {
                 // Logic for updating a site.
-                let site_selection = Select::with_theme(&ColorfulTheme::default())
-                    .with_prompt("Select a site to update")
-                    .items(&results
-                        .iter()
-                        .map(|i| &i["name"])
-                        .collect::<Vec<&serde_json::Value>>()
-                    )
-                    .interact()?;
-
-                let site_id = results[site_selection]["id"].as_str().unwrap();
-
-                let selected_site = api.get_site_by_id(site_id)?;
-                let installs = selected_site["installs"].as_array().unwrap();
-
-                let install_selection = Select::with_theme(&ColorfulTheme::default())
-                    .with_prompt("Select an Install")
-                    .items(&installs
-                        .iter()
-                        .map(|i| &i["name"])
-                        .collect::<Vec<&serde_json::Value>>()
-                    )
-                    .interact()?;
-
-                let install = &installs[install_selection];
+                let (site_id, install) = get_install_data(results, &api)?;
 
                 let environment = Select::with_theme(&ColorfulTheme::default())
                     .with_prompt("Select an environment")
@@ -219,7 +211,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
 
                 if Confirm::new().with_prompt("Does this data look right?").interact()? {
 
-                    let update = api.update_install(install["id"].as_str().unwrap(), &data)?;
+                    let update = api.update_install(install, &data)?;
                     println!(
                         "Successfully updated install: {}",
                         serde_json::to_string_pretty(&update)?
@@ -231,17 +223,8 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                 }
             },
             3 => {
-                // Logic for deleting a site.
-                let install_slection = Select::with_theme(&ColorfulTheme::default())
-                    .with_prompt("Select a site to update.")
-                    .items(&results
-                        .iter()
-                        .map(|i| &i["name"])
-                        .collect::<Vec<&serde_json::Value>>()
-                    )
-                    .interact()?;
-
-                let install = &results[install_slection]["id"].as_str().unwrap().to_string();
+                // Logic for deleting an install from a site.
+                let (site_id, install) = get_install_data(results, &api)?;
                 if Confirm::new().with_prompt("Does this data look right?").interact()? {
 
                     api.delete_install(install)?;

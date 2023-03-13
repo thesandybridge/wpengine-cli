@@ -236,7 +236,7 @@ impl API {
     }
 
     /// Get a single site by its ID from the wpengine API
-    pub fn get_site_by_id(&self, id: &str) -> Result<serde_json::Value, anyhow::Error> {
+    pub fn get_site_by_id(&self, id: String) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .get(&format!("{}/sites/{}", &self.config.wpengine_api,  id))
@@ -284,7 +284,7 @@ impl API {
     }
 
     /// Try to delete a specific install.
-    pub fn delete_site(&self, id: &str ) -> Result<serde_json::Value, anyhow::Error>{
+    pub fn delete_site(&self, id: String ) -> Result<serde_json::Value, anyhow::Error>{
         let res = self
             .client
             .delete(&format!("{}/sites/{}", &self.config.wpengine_api, id))
@@ -344,7 +344,7 @@ impl API {
         Ok(res)
     }
 
-    pub fn update_install(&self, install_id: &str, body: &InstallPatch)
+    pub fn update_install(&self, install_id: String, body: &InstallPatch)
         -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
@@ -407,7 +407,7 @@ impl API {
     }
 
     /// Try to delete a specific install.
-    pub fn delete_install(&self, id: &str ) -> Result<serde_json::Value, anyhow::Error> {
+    pub fn delete_install(&self, id: String ) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .delete(&format!("{}/installs/{}", &self.config.wpengine_api, id))
