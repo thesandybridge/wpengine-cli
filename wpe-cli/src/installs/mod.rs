@@ -137,7 +137,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                     .interact()?;
 
                 let item = &results[install_selection]["id"];
-                let install = api.get_install_by_id(&item.to_string())?;
+                let install = api.get_install_by_id(&item.as_str().unwrap())?;
 
                 println!("Selection: {}", serde_json::to_string_pretty(&install)?);
             },
