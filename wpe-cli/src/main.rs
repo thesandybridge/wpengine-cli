@@ -41,6 +41,37 @@ fn cli() -> Command {
                 )
         )
         .subcommand(
+            Command::new("installs")
+                .about("Display list of installs as selection.")
+                .arg(arg!(<PAGE> "The page number").required(false))
+                .after_help("Selecting one will fetch the site and display more options.")
+                .subcommand(
+                    Command::new("list")
+                        .about("List sites.")
+                        .arg(arg!(<ID> "Account ID").required(false))
+                )
+                .subcommand(
+                    Command::new("add")
+                        .about("Add a site using headless mode")
+                        .arg(arg!(<NAME> "Site name").required(true))
+                        .arg(arg!(<ACCOUNT> "Account ID").required(true))
+                        .arg(arg!(<SITE> "Site ID").required(true))
+                        .arg(arg!(<ENV> "Environment").required(true))
+                )
+                .subcommand(
+                    Command::new("update")
+                        .about("Update the name of a site.")
+                        .arg(arg!(<ID> "Install ID").required(true))
+                        .arg(arg!(<SITE> "Site ID").required(false))
+                        .arg(arg!(<ENV> "Environment").required(false))
+                )
+                .subcommand(
+                    Command::new("delete")
+                        .about("Delete an install.")
+                        .arg(arg!(<ID> "Install ID").required(true))
+                )
+        )
+        .subcommand(
             Command::new("accounts")
                 .about("Fetch all sites from your wpengine account")
                 .arg(arg!(<PAGE> "The page number").required(false))
@@ -88,6 +119,9 @@ fn main() -> Result<()> {
             // Initialize [sites] command logic.
             sites::init(sub_n, command, headless)?;
         },
+        Some(("installs", sub_n)) => {
+            installs::init(sub_n, command, headless)?;
+        }
         Some(("accounts", sub_n)) => {
             // Initialize [accounts] command logic.
             accounts::init(sub_n, command, headless)?;

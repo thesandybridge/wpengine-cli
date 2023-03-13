@@ -125,7 +125,9 @@ pub struct Install {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct InstallPatch {
-    pub site_id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub site_id: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub environment: Option<String>
 }
 
