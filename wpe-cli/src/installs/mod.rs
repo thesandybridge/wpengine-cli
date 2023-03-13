@@ -76,7 +76,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
     }
 
     // Fetch sites and display results. Will also show paginated results.
-    let next = api.get_installs(Some(page_num))?;
+    let next = api.get_sites(Some(page_num))?;
     let results = next["results"].as_array().unwrap();
 
     // Check for headless mode.
@@ -110,12 +110,12 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
             },
             Some(("update", sub)) => {
                 let install_id = sub.get_one::<String>("ID").unwrap();
-                let site_id = sub.get_one::<String>("SITE");
-                let env = sub.get_one::<String>("ENV");
+                let site_id = sub.get_one::<String>("SITE").unwrap();
+                let env = sub.get_one::<String>("ENV").unwrap();
 
                 let data = wpe::InstallPatch {
-                    site_id: site_id.cloned(),
-                    environment: env.cloned()
+                    site_id: site_id.to_string(),
+                    environment: env.to_string()
                 };
 
                 let update_site = api.update_install(install_id, &data)?;
@@ -178,8 +178,8 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
             },
             2 => {
                 // Logic for updating a site.
-                let install_selection = Select::with_theme(&ColorfulTheme::default())
-                    .with_prompt("Select a site to update.")
+                let site_selection = Select::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Select a site to update")
                     .items(&results
                         .iter()
                         .map(|i| &i["name"])
@@ -187,53 +187,47 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                     )
                     .interact()?;
 
-                let install = &results[install_selection]["id"].as_str().unwrap().to_string();
-                let site_id: String = Input::new()
-                    .with_prompt("Enter a site ID.")
-                    .allow_empty(true)
+                let site_id = results[site_selection]["id"].as_str().unwrap();
+
+                let selected_site = api.get_site_by_id(site_id)?;
+                let installs = selected_site["installs"].as_array().unwrap();
+
+                let install_selection = Select::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Select an Install")
+                    .items(&installs
+                        .iter()
+                        .map(|i| &i["name"])
+                        .collect::<Vec<&serde_json::Value>>()
+                    )
                     .interact()?;
 
-                let environment: String = Input::new()
-                    .with_prompt("Enter an environment name.")
-                    .allow_empty(true)
+                let install = &installs[install_selection];
+
+                let environment = Select::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Select an environment")
+                    .items(&ENV)
                     .interact()?;
 
-                let site: Option<String>;
-                let env: Option<String>;
+                let env = ENV[environment];
 
-                if site_id.is_empty() {
-                    site = Some(site_id.clone());
+                let data = wpe::InstallPatch {
+                    site_id: site_id.to_string(),
+                    environment: env.to_string()
+                };
+
+                println!("{}", serde_json::to_string_pretty(&data)?);
+
+                if Confirm::new().with_prompt("Does this data look right?").interact()? {
+
+                    let update = api.update_install(install["id"].as_str().unwrap(), &data)?;
+                    println!(
+                        "Successfully updated install: {}",
+                        serde_json::to_string_pretty(&update)?
+                    );
+
                 } else {
-                    site = None
-                }
-
-                if environment.is_empty() {
-                    env = Some(environment)
-                } else {
-                    env = None
-                }
-
-                if site_id.is_empty() {
-                    println!("cancelling, no value provided.");
-
-                    if Confirm::new().with_prompt("Does this data look right?").interact()? {
-
-                        // Need to do something better to handle optional values.
-                        let data = wpe::InstallPatch {
-                            site_id: site,
-                            environment: env
-                        };
-
-                        let update = api.update_install(install, &data)?;
-                        println!(
-                            "Successfully update install: {}",
-                            serde_json::to_string_pretty(&update)?
-                        );
-
-                    } else {
-                        // Recursively call init to show prompts again.
-                        init(sub_n, api, headless)?;
-                    }
+                    // Recursively call init to show prompts again.
+                    init(sub_n, api, headless)?;
                 }
             },
             3 => {
