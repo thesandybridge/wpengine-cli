@@ -28,7 +28,7 @@ fn get_install_data(api: &API) -> Result<(String, String, String, String)>{
     let sites = sites_results["results"].as_array().unwrap();
 
     let site = Select::with_theme(&ColorfulTheme::default())
-        .with_prompt("Select an site")
+        .with_prompt("Select a site")
         .items(&sites
             .iter()
             .map(|s| &s["name"])
@@ -260,6 +260,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
             _ => println!("An error occured with your selection")
         }
     }
-    Ok(())
+
+    return Ok(());
 }
 
