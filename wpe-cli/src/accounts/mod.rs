@@ -43,7 +43,7 @@ pub fn init(sub_n: &ArgMatches, command: API, headless: Option<&bool>) -> Result
 
         let item = &results[selection]["id"];
         let account = command.get_account_by_id(
-            &item.to_string()
+            &item.as_str().unwrap()
             ).unwrap();
 
         println!("Selection: {}", serde_json::to_string_pretty(&account)?);
