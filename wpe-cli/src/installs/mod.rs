@@ -11,9 +11,6 @@ use wpe::API;
 const ENV: [&str; 3] = ["development", "staging", "production"];
 
 fn get_install_data(api: &API) -> Result<(String, String, String, String)>{
-    let install: String = Input::new()
-        .with_prompt("Enter an install name")
-        .interact()?;
 
     let accounts_results = api.get_accounts(Some(0))?;
     let accounts = accounts_results["results"].as_array().unwrap();
@@ -37,6 +34,10 @@ fn get_install_data(api: &API) -> Result<(String, String, String, String)>{
             .map(|s| &s["name"])
             .collect::<Vec<&serde_json::Value>>()
         )
+        .interact()?;
+
+    let install: String = Input::new()
+        .with_prompt("Enter an install name")
         .interact()?;
 
     let environment = Select::with_theme(&ColorfulTheme::default())
