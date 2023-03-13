@@ -1,6 +1,7 @@
 use clap::{arg, Command};
 use anyhow::Result;
 mod sites;
+mod installs;
 mod accounts;
 
 /// Setup the CLI and build the commands.
@@ -37,6 +38,37 @@ fn cli() -> Command {
                     Command::new("delete")
                         .about("Delete a site.")
                         .arg(arg!(<ID> "Site ID").required(true))
+                )
+        )
+        .subcommand(
+            Command::new("installs")
+                .about("Display list of installs as selection.")
+                .arg(arg!(<PAGE> "The page number").required(false))
+                .after_help("Selecting one will fetch the site and display more options.")
+                .subcommand(
+                    Command::new("list")
+                        .about("List sites.")
+                        .arg(arg!(<ID> "Account ID").required(false))
+                )
+                .subcommand(
+                    Command::new("add")
+                        .about("Add a site using headless mode")
+                        .arg(arg!(<NAME> "Site name").required(true))
+                        .arg(arg!(<ACCOUNT> "Account ID").required(true))
+                        .arg(arg!(<SITE> "Site ID").required(true))
+                        .arg(arg!(<ENV> "Environment").required(true))
+                )
+                .subcommand(
+                    Command::new("update")
+                        .about("Update the name of a site.")
+                        .arg(arg!(<ID> "Install ID").required(true))
+                        .arg(arg!(<SITE> "Site ID").required(false))
+                        .arg(arg!(<ENV> "Environment").required(false))
+                )
+                .subcommand(
+                    Command::new("delete")
+                        .about("Delete an install.")
+                        .arg(arg!(<ID> "Install ID").required(true))
                 )
         )
         .subcommand(
@@ -77,6 +109,13 @@ fn main() -> Result<()> {
     // Check if authentication exists, else handle authentication.
     wpe::init()?;
 
+    // Handle missing cursor when pressing ctrl-c to quit.
+    ctrlc::set_handler(move || {
+        let term = console::Term::stdout();
+        let _ = term.show_cursor();
+    })?;
+
+    // Initiate CLI commands.
     let matches = cli().get_matches();
     let command = wpe::API::new();
     let headless = matches.get_one::<bool>("headless");
@@ -87,6 +126,9 @@ fn main() -> Result<()> {
             // Initialize [sites] command logic.
             sites::init(sub_n, command, headless)?;
         },
+        Some(("installs", sub_n)) => {
+            installs::init(sub_n, command, headless)?;
+        }
         Some(("accounts", sub_n)) => {
             // Initialize [accounts] command logic.
             accounts::init(sub_n, command, headless)?;

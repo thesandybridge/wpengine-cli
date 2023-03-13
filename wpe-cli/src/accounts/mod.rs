@@ -12,11 +12,11 @@ use wpe::API;
 /// * `headless` - Option<&bool>
 pub fn init(sub_n: &ArgMatches, command: API, headless: Option<&bool>) -> Result<()> {
     let page = sub_n.get_one::<String>("PAGE");
-    let page_num: i32;
+    let page_num: u8;
     // Check for provided page argument, else provide default.
     match page {
         Some(x) => {
-            page_num = x.parse::<i32>().unwrap();
+            page_num = x.parse::<u8>().unwrap();
         },
         None => {
             page_num = 0;

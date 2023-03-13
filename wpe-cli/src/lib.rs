@@ -99,13 +99,6 @@ pub fn init() -> Result<()> {
     Ok(())
 }
 
-#[derive(Serialize, Deserialize, Debug)]
-enum Environment {
-    Production,
-    Staging,
-    Development
-}
-
 pub struct API {
     client: reqwest::blocking::Client,
     config: Config,
@@ -124,16 +117,16 @@ pub struct SitePatch {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Install {
-    name: String,
-    account_id: String,
-    site_id: String,
-    environment: Environment
+    pub name: String,
+    pub account_id: String,
+    pub site_id: String,
+    pub environment: String
 }
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct InstallPatch {
-    site_id: Option<String>,
-    environment: Option<Environment>
+    pub site_id: String,
+    pub environment: String
 }
 
 #[derive(Serialize, Deserialize, Default, Debug)]
@@ -194,17 +187,17 @@ impl API {
     /// Creates a new reqwest client instance
     pub fn new() -> Self {
         let client = reqwest::blocking::Client::new();
-        let config = get_config(); 
+        let config = get_config();
         Self { client, config}
     }
-    
+
     /// Status endpoint to check API health.
     pub fn status(&self) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .get(&format!("{}/status", &self.config.wpengine_api))
             .basic_auth(
-                &self.config.wpengine_user_id, 
+                &self.config.wpengine_user_id,
                 Some(&self.config.wpengine_password)
             )
             .send()?
@@ -218,7 +211,7 @@ impl API {
             .client
             .get(&format!("{}/swagger", &self.config.wpengine_api))
             .basic_auth(
-                &self.config.wpengine_user_id, 
+                &self.config.wpengine_user_id,
                 Some(&self.config.wpengine_password)
             )
             .send()?
@@ -228,12 +221,12 @@ impl API {
     }
 
     /// Get all sites from wpengine. Pass an optional page number to show more results.
-    pub fn get_sites(&self, page: Option<i32>) -> Result<serde_json::Value, anyhow::Error> {
+    pub fn get_sites(&self, page: Option<u8>) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .get(&format!("{}/sites?offset={}", &self.config.wpengine_api, page.unwrap_or(0) * 100))
             .basic_auth(
-                &self.config.wpengine_user_id, 
+                &self.config.wpengine_user_id,
                 Some(&self.config.wpengine_password)
             )
             .send()?
@@ -248,7 +241,7 @@ impl API {
             .client
             .get(&format!("{}/sites/{}", &self.config.wpengine_api,  id))
             .basic_auth(
-                &self.config.wpengine_user_id, 
+                &self.config.wpengine_user_id,
                 Some(&self.config.wpengine_password)
             )
             .send()?
@@ -273,7 +266,7 @@ impl API {
         Ok(res)
     }
 
-    pub fn update_site(&self, id: &str, body: &SitePatch) 
+    pub fn update_site(&self, id: &str, body: &SitePatch)
         -> Result<serde_json::Value, anyhow::Error> {
 
         let res = self
@@ -306,12 +299,12 @@ impl API {
     }
 
     /// Get all installs from wpengine. Pass an optional page number to show more results.
-    pub fn get_installs(&self, page: Option<i32>) -> Result<serde_json::Value, anyhow::Error> {
+    pub fn get_installs(&self, page: Option<u8>) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .get(&format!("{}/installs?offset={}", &self.config.wpengine_api, page.unwrap_or(0) * 100))
             .basic_auth(
-                &self.config.wpengine_user_id, 
+                &self.config.wpengine_user_id,
                 Some(&self.config.wpengine_password)
             )
             .send()?
@@ -326,7 +319,7 @@ impl API {
             .client
             .get(&format!("{}/installs/{}", &self.config.wpengine_api,  id))
             .basic_auth(
-                &self.config.wpengine_user_id, 
+                &self.config.wpengine_user_id,
                 Some(&self.config.wpengine_password)
             )
             .send()?
@@ -351,7 +344,7 @@ impl API {
         Ok(res)
     }
 
-    pub fn update_install(&self, install_id: &str, body: &InstallPatch) 
+    pub fn update_install(&self, install_id: &str, body: &InstallPatch)
         -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
@@ -429,8 +422,8 @@ impl API {
     }
 
     /// List all accounts, optional page offset.
-    pub fn get_accounts(&self, page: Option<i32>) -> Result<serde_json::Value, anyhow::Error> {
-        let res = self 
+    pub fn get_accounts(&self, page: Option<u8>) -> Result<serde_json::Value, anyhow::Error> {
+        let res = self
             .client
             .get(&format!("{}/accounts?offset={}", &self.config.wpengine_api, page.unwrap_or(0) * 100))
             .basic_auth(
@@ -445,7 +438,7 @@ impl API {
 
     /// Get the currently authenticated user's account details.
     pub fn get_user(&self) -> Result<serde_json::Value, anyhow::Error> {
-        let res = self 
+        let res = self
             .client
             .get(&format!("{}/user", &self.config.wpengine_api))
             .basic_auth(
@@ -463,7 +456,7 @@ impl API {
             .client
             .get(&format!("{}/accounts/{}", &self.config.wpengine_api,  id))
             .basic_auth(
-                &self.config.wpengine_user_id, 
+                &self.config.wpengine_user_id,
                 Some(&self.config.wpengine_password)
             )
             .send()?
@@ -493,7 +486,7 @@ impl API {
             .client
             .get(&format!("{}/accounts/{}/account_users/{}", &self.config.wpengine_api, account_id, user_id))
             .basic_auth(
-                &self.config.wpengine_user_id, 
+                &self.config.wpengine_user_id,
                 Some(&self.config.wpengine_password)
             )
             .send()?
@@ -502,7 +495,7 @@ impl API {
         Ok(res)
     }
 
-    pub fn update_user(&self, account_id: &str, user_id: &str, body: &AccountUserPatch) 
+    pub fn update_user(&self, account_id: &str, user_id: &str, body: &AccountUserPatch)
         -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
@@ -535,7 +528,7 @@ impl API {
 
     /// Get a list of ssh keys for authorized user.
     pub fn get_ssh_keys(&self, page: Option<i32>) -> Result<serde_json::Value, anyhow::Error> {
-        let res = self 
+        let res = self
             .client
             .get(&format!("{}/ssh_keys?offset={}", &self.config.wpengine_api, page.unwrap_or(0) * 100))
             .basic_auth(
@@ -580,8 +573,8 @@ impl API {
     }
 
     /// Get domains from an install
-    pub fn get_domains(&self, id: &str,  page: Option<i32>) -> Result<serde_json::Value, anyhow::Error> {
-        let res = self 
+    pub fn get_domains(&self, id: &String,  page: Option<u8>) -> Result<serde_json::Value, anyhow::Error> {
+        let res = self
             .client
             .get(&format!("{}/installs/{}/domains?offset={}", &self.config.wpengine_api, id, page.unwrap_or(0) * 100))
             .basic_auth(
@@ -595,7 +588,7 @@ impl API {
     }
 
     pub fn get_domain_by_id(&self, install_id: &str, domain_id: &str) -> Result<serde_json::Value, anyhow::Error> {
-        let res = self 
+        let res = self
             .client
             .get(&format!("{}/installs/{}/domains/{}", &self.config.wpengine_api, install_id, domain_id))
             .basic_auth(
@@ -623,7 +616,7 @@ impl API {
         Ok(res)
     }
 
-    pub fn update_domain(&self, install_id: &str, domain_id: &str, data: &DomainPatch) 
+    pub fn update_domain(&self, install_id: &str, domain_id: &str, data: &DomainPatch)
         -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client

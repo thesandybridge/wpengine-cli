@@ -17,11 +17,11 @@ use wpe::API;
 /// * `headless` - Option<&bool>
 pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()> {
     let page = sub_n.get_one::<String>("PAGE");
-    let page_num: i32;
+    let page_num: u8;
 
     match page {
         Some(x) => {
-            page_num = x.parse::<i32>().unwrap();
+            page_num = x.parse::<u8>().unwrap();
         },
         None => {
             page_num = 0;
@@ -37,7 +37,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
         match sub_n.subcommand() {
             Some(("list", sub)) => {
                 if let Some(id) = sub.get_one::<String>("ID") {
-                    let site = api.get_site_by_id(id)?;
+                    let site = api.get_site_by_id(&id.as_str())?;
                     println!("{}", serde_json::to_string_pretty(&site)?);
 
                 } else {
@@ -52,7 +52,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                     name: name.to_string(),
                     account_id: id.to_string()
                 };
-                
+
                 let add_site = api.add_site(&data)?;
 
                 println!("{}", serde_json::to_string_pretty(&add_site)?);
@@ -65,14 +65,14 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                     name: name.cloned()
                 };
 
-                let update_site = api.update_site(id, &data)?;
+                let update_site = api.update_site(id.as_str(), &data)?;
 
                 println!("{}", serde_json::to_string_pretty(&update_site)?);
             },
             Some(("delete", sub)) => {
                 let id = sub.get_one::<String>("ID").unwrap();
 
-                api.delete_site(id)?;
+                api.delete_site(&id.as_str())?;
             },
             _ => {
                 println!("{}", serde_json::to_string_pretty(results)?);
@@ -111,7 +111,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                     .interact()?;
 
                 let accounts_results = api.get_accounts(Some(0))?;
-                let accounts = accounts_results["results"].as_array().unwrap(); 
+                let accounts = accounts_results["results"].as_array().unwrap();
 
                 let account = Select::with_theme(&ColorfulTheme::default())
                     .with_prompt("Select an account")
@@ -130,7 +130,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                 let add_site = api.add_site(&data)?;
 
                 println!(
-                    "Successfully added site: {}", 
+                    "Successfully added site: {}",
                     serde_json::to_string_pretty(&add_site)?
                 );
             },
@@ -162,7 +162,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                             name: Some(site_name)
                         };
 
-                        let update_site = api.update_site(site, &data)?;
+                        let update_site = api.update_site(site.as_str(), &data)?;
                         println!(
                             "Successfully update site: {}",
                             serde_json::to_string_pretty(&update_site)?
@@ -173,7 +173,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                         init(sub_n, api, headless)?;
                     }
                 }
-                
+
             },
             3 => {
                 // Logic for deleting a site.
@@ -187,7 +187,8 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                     .interact()?;
 
                 let site = &results[site_slection]["id"].as_str().unwrap().to_string();
-                if Confirm::new().with_prompt("Does this data look right?").interact()? {
+
+                if Confirm::new().with_prompt("Are you sure?").interact()? {
 
                         api.delete_site(site)?;
                         println!("Site deleted!");
@@ -198,7 +199,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
             },
             _ => println!("An error occured with your selection")
         }
-        
+
     }
     Ok(())
 }
