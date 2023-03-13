@@ -1,3 +1,0 @@
-# Local WordPress GUI
-
-Coming soon...
