@@ -109,6 +109,13 @@ fn main() -> Result<()> {
     // Check if authentication exists, else handle authentication.
     wpe::init()?;
 
+    // Handle missing cursor when pressing ctrl-c to quit.
+    ctrlc::set_handler(move || {
+        let term = console::Term::stdout();
+        let _ = term.show_cursor();
+    })?;
+
+    // Initiate CLI commands.
     let matches = cli().get_matches();
     let command = wpe::API::new();
     let headless = matches.get_one::<bool>("headless");

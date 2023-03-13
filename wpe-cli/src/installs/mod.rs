@@ -140,7 +140,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
             0 => {
                 // Handle logic for listing sites.
                 let install_selection = Select::with_theme(&ColorfulTheme::default())
-                    .with_prompt("Select an install to view...")
+                    .with_prompt("Select a site to view...")
                     .items(&results
                         .iter()
                         .map(|install| &install["name"])
