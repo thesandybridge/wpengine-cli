@@ -37,7 +37,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
         match sub_n.subcommand() {
             Some(("list", sub)) => {
                 if let Some(id) = sub.get_one::<String>("ID") {
-                    let site = api.get_site_by_id(id.to_string())?;
+                    let site = api.get_site_by_id(&id.to_string())?;
                     println!("{}", serde_json::to_string_pretty(&site)?);
 
                 } else {
@@ -72,7 +72,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
             Some(("delete", sub)) => {
                 let id = sub.get_one::<String>("ID").unwrap();
 
-                api.delete_site(id.to_string())?;
+                api.delete_site(&id.to_string())?;
             },
             _ => {
                 println!("{}", serde_json::to_string_pretty(results)?);
@@ -99,7 +99,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                     .interact()?;
 
                 let item = &results[site_slection]["id"];
-                let site = api.get_site_by_id(item.to_string())?;
+                let site = api.get_site_by_id(&item.to_string())?;
 
                 println!("Selection: {}", serde_json::to_string_pretty(&site)?);
             },
@@ -189,7 +189,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                 let site = &results[site_slection]["id"].as_str().unwrap().to_string();
                 if Confirm::new().with_prompt("Does this data look right?").interact()? {
 
-                        api.delete_site(site.to_string())?;
+                        api.delete_site(site)?;
                         println!("Site deleted!");
 
                     } else {

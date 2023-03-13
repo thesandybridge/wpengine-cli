@@ -236,7 +236,7 @@ impl API {
     }
 
     /// Get a single site by its ID from the wpengine API
-    pub fn get_site_by_id(&self, id: String) -> Result<serde_json::Value, anyhow::Error> {
+    pub fn get_site_by_id(&self, id: &String) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .get(&format!("{}/sites/{}", &self.config.wpengine_api,  id))
@@ -266,7 +266,7 @@ impl API {
         Ok(res)
     }
 
-    pub fn update_site(&self, id: &str, body: &SitePatch)
+    pub fn update_site(&self, id: &String, body: &SitePatch)
         -> Result<serde_json::Value, anyhow::Error> {
 
         let res = self
@@ -284,7 +284,7 @@ impl API {
     }
 
     /// Try to delete a specific install.
-    pub fn delete_site(&self, id: String ) -> Result<serde_json::Value, anyhow::Error>{
+    pub fn delete_site(&self, id: &String ) -> Result<serde_json::Value, anyhow::Error>{
         let res = self
             .client
             .delete(&format!("{}/sites/{}", &self.config.wpengine_api, id))
@@ -314,7 +314,7 @@ impl API {
     }
 
     /// Get a single install by its ID from the wpengine API
-    pub fn get_install_by_id(&self, id: &str) -> Result<serde_json::Value, anyhow::Error> {
+    pub fn get_install_by_id(&self, id: &String) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .get(&format!("{}/installs/{}", &self.config.wpengine_api,  id))
@@ -344,7 +344,7 @@ impl API {
         Ok(res)
     }
 
-    pub fn update_install(&self, install_id: String, body: &InstallPatch)
+    pub fn update_install(&self, install_id: &String, body: &InstallPatch)
         -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
@@ -360,7 +360,7 @@ impl API {
         Ok(res)
     }
 
-    pub fn purge_cache(&self, id: &str, body: String) -> Result<serde_json::Value, anyhow::Error> {
+    pub fn purge_cache(&self, id: &String, body: String) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .post(&format!("{}/installs/{}/purge_cache", &self.config.wpengine_api, id))
@@ -377,7 +377,7 @@ impl API {
         Ok(res)
     }
 
-    pub fn backup(&self, id: &str, backup: &Backup) -> Result<serde_json::Value, anyhow::Error> {
+    pub fn backup(&self, id: &String, backup: &Backup) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .post(&format!("{}/installs/{}/backups", &self.config.wpengine_api, id))
@@ -392,7 +392,7 @@ impl API {
         Ok(res)
     }
 
-    pub fn get_backup(&self, install_id: &str, backup_id: &str) -> Result<serde_json::Value, anyhow::Error> {
+    pub fn get_backup(&self, install_id: &String, backup_id: &str) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .get(&format!("{}/installs/{}/backups/{}", &self.config.wpengine_api, install_id, backup_id))
@@ -407,7 +407,7 @@ impl API {
     }
 
     /// Try to delete a specific install.
-    pub fn delete_install(&self, id: String ) -> Result<serde_json::Value, anyhow::Error> {
+    pub fn delete_install(&self, id: &String ) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .delete(&format!("{}/installs/{}", &self.config.wpengine_api, id))
@@ -451,7 +451,7 @@ impl API {
         Ok(res)
     }
     /// List account by ID.
-    pub fn get_account_by_id(&self, id: &str) -> Result<serde_json::Value, anyhow::Error> {
+    pub fn get_account_by_id(&self, id: &String) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .get(&format!("{}/accounts/{}", &self.config.wpengine_api,  id))
@@ -466,7 +466,7 @@ impl API {
     }
 
     /// Add a user to a specific account.
-    pub fn add_user(&self, id: &str, user: &AccountUser) -> Result<serde_json::Value, anyhow::Error> {
+    pub fn add_user(&self, id: &String, user: &AccountUser) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .post(&format!("{}/accounts/{}/account_users", &self.config.wpengine_api, id))
@@ -481,7 +481,7 @@ impl API {
         Ok(res)
     }
 
-    pub fn get_user_by_id(&self, account_id: &str, user_id: &str) -> Result<serde_json::Value, anyhow::Error> {
+    pub fn get_user_by_id(&self, account_id: &String, user_id: &String) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .get(&format!("{}/accounts/{}/account_users/{}", &self.config.wpengine_api, account_id, user_id))
@@ -495,7 +495,7 @@ impl API {
         Ok(res)
     }
 
-    pub fn update_user(&self, account_id: &str, user_id: &str, body: &AccountUserPatch)
+    pub fn update_user(&self, account_id: &String, user_id: &String, body: &AccountUserPatch)
         -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
@@ -512,7 +512,7 @@ impl API {
     }
 
     /// Try to delete a user from an account.
-    pub fn delete_user(&self, account_id: &str, user_id: &str ) -> Result<serde_json::Value, anyhow::Error> {
+    pub fn delete_user(&self, account_id: &String, user_id: &String ) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .delete(&format!("{}/accounts/{}/account_users/{}", &self.config.wpengine_api, account_id, user_id))
@@ -558,7 +558,7 @@ impl API {
     }
 
     /// Delete an ssh key from the authorized users account.
-    pub fn delete_ssh_key(&self, id: &str) -> Result<serde_json::Value, anyhow::Error> {
+    pub fn delete_ssh_key(&self, id: &String) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .delete(&format!("{}/ssh_keys/{}", &self.config.wpengine_api, id))
@@ -587,7 +587,7 @@ impl API {
         Ok(res)
     }
 
-    pub fn get_domain_by_id(&self, install_id: &str, domain_id: &str) -> Result<serde_json::Value, anyhow::Error> {
+    pub fn get_domain_by_id(&self, install_id: &String, domain_id: &String) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .get(&format!("{}/installs/{}/domains/{}", &self.config.wpengine_api, install_id, domain_id))
@@ -601,7 +601,7 @@ impl API {
         Ok(res)
     }
 
-    pub fn add_domain(&self, id: &str, domain: &Domain) -> Result<serde_json::Value, anyhow::Error> {
+    pub fn add_domain(&self, id: &String, domain: &Domain) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .post(&format!("{}/installs/{}/domains", &self.config.wpengine_api, id))
@@ -616,7 +616,7 @@ impl API {
         Ok(res)
     }
 
-    pub fn update_domain(&self, install_id: &str, domain_id: &str, data: &DomainPatch)
+    pub fn update_domain(&self, install_id: &String, domain_id: &String, data: &DomainPatch)
         -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
@@ -632,7 +632,7 @@ impl API {
         Ok(res)
     }
 
-    pub fn delete_domain(&self, install_id: &str, domain_id: &str) -> Result<serde_json::Value, anyhow::Error> {
+    pub fn delete_domain(&self, install_id: &String, domain_id: &String) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .delete(&format!("{}/installs/{}/domains/{}", &self.config.wpengine_api, install_id, domain_id))

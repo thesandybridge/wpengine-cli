@@ -23,7 +23,7 @@ fn get_install_data(results: &Vec<Value>, api: &API) -> Result<(String, String)>
 
     let site_id = results[site_selection]["id"].to_string();
 
-    let selected_site = api.get_site_by_id(site_id)?;
+    let selected_site = api.get_site_by_id(&site_id)?;
     let installs = selected_site["installs"].as_array().unwrap();
 
     let install_selection = Select::with_theme(&ColorfulTheme::default())
@@ -103,14 +103,14 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                     environment: env.to_string()
                 };
 
-                let update_site = api.update_install(install_id.to_string(), &data)?;
+                let update_site = api.update_install(install_id, &data)?;
 
                 println!("{}", serde_json::to_string_pretty(&update_site)?);
             },
             Some(("delete", sub)) => {
                 let id = sub.get_one::<String>("ID").unwrap();
 
-                api.delete_install(id.to_string())?;
+                api.delete_install(id)?;
             },
             _ => {
                 println!("{}", serde_json::to_string_pretty(results)?);
@@ -137,7 +137,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                     .interact()?;
 
                 let item = &results[install_selection]["id"];
-                let install = api.get_install_by_id(&item.as_str().unwrap())?;
+                let install = api.get_install_by_id(&item.to_string())?;
 
                 println!("Selection: {}", serde_json::to_string_pretty(&install)?);
             },
@@ -211,7 +211,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
 
                 if Confirm::new().with_prompt("Does this data look right?").interact()? {
 
-                    let update = api.update_install(install, &data)?;
+                    let update = api.update_install(&install, &data)?;
                     println!(
                         "Successfully updated install: {}",
                         serde_json::to_string_pretty(&update)?
@@ -224,10 +224,11 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
             },
             3 => {
                 // Logic for deleting an install from a site.
-                let (site_id, install) = get_install_data(results, &api)?;
+                let (_, install) = get_install_data(results, &api)?;
+
                 if Confirm::new().with_prompt("Does this data look right?").interact()? {
 
-                    api.delete_install(install)?;
+                    api.delete_install(&install)?;
                     println!("Install deleted!");
 
                 } else {
