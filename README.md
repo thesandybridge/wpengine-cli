@@ -43,10 +43,10 @@ You can also use the `auth` command to update the credentials or manually add th
 
 ## Sites
 
-The `sites` command will allow you to list, add, update, or delete existing sites. Passing the 
+The `sites` command will allow you to list, add, update, or delete existing sites. Passing the
 `-H` flag will enable headless mode for using the CLI in a pipeline or as part of a script.
 
-Headless mode will enable list, add, update, and delete sub commands. 
+Headless mode will enable list, add, update, and delete sub commands.
 
 **Examples**
 
@@ -71,7 +71,7 @@ wpe -H sites 1 list <Site_ID> # list a single site from page 2.
 
 - [ ] [Build commands for User/Accounts endpoint](https://github.com/thesandybridge/wpengine_cli_v2/issues/5)
 - [ ] [Build commands for Domain endpoint](https://github.com/thesandybridge/wpengine_cli_v2/issues/8)
-- [ ] [Build commands for Installs endpoint](https://github.com/thesandybridge/wpengine_cli_v2/issues/4)
+- [x] [Build commands for Installs endpoint](https://github.com/thesandybridge/wpengine_cli_v2/issues/4)
 - [ ] [Build commands for SSH endpoint](https://github.com/thesandybridge/wpengine_cli_v2/issues/6)
 
 ### Optional Features
