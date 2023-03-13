@@ -12,7 +12,7 @@ const ENV: [&str; 3] = ["development", "staging", "production"];
 
 fn get_install_data(api: &API) -> Result<(String, String, String, String)>{
     let install: String = Input::new()
-        .with_prompt("Enter a install name")
+        .with_prompt("Enter an install name")
         .interact()?;
 
     let accounts_results = api.get_accounts(Some(0))?;
@@ -21,22 +21,22 @@ fn get_install_data(api: &API) -> Result<(String, String, String, String)>{
     let account = Select::with_theme(&ColorfulTheme::default())
         .with_prompt("Select an account")
         .items(&accounts
-               .iter()
-               .map(|acc| &acc["name"])
-               .collect::<Vec<&serde_json::Value>>()
-              )
+            .iter()
+            .map(|acc| &acc["name"])
+            .collect::<Vec<&serde_json::Value>>()
+        )
         .interact()?;
 
-    let sites_results = api.get_accounts(Some(0))?;
+    let sites_results = api.get_sites(Some(1))?;
     let sites = sites_results["results"].as_array().unwrap();
 
     let site = Select::with_theme(&ColorfulTheme::default())
-        .with_prompt("Select an account")
+        .with_prompt("Select an site")
         .items(&sites
-               .iter()
-               .map(|s| &s["id"])
-               .collect::<Vec<&serde_json::Value>>()
-              )
+            .iter()
+            .map(|s| &s["name"])
+            .collect::<Vec<&serde_json::Value>>()
+        )
         .interact()?;
 
     let environment = Select::with_theme(&ColorfulTheme::default())
@@ -44,11 +44,13 @@ fn get_install_data(api: &API) -> Result<(String, String, String, String)>{
         .items(&ENV)
         .interact()?;
 
+    println!("{}", &accounts[account]["id"]);
+
     return Ok((
-            install,
-            accounts[account]["id"].to_string(),
-            sites[site]["id"].to_string(),
-            ENV[environment].to_string()
+        install,
+        accounts[account]["id"].as_str().unwrap().to_string(),
+        sites[site]["id"].as_str().unwrap().to_string(),
+        ENV[environment].to_string()
     ));
 }
 
