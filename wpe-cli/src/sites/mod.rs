@@ -37,7 +37,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
         match sub_n.subcommand() {
             Some(("list", sub)) => {
                 if let Some(id) = sub.get_one::<String>("ID") {
-                    let site = api.get_site_by_id(&id.to_string())?;
+                    let site = api.get_site_by_id(&id.as_str())?;
                     println!("{}", serde_json::to_string_pretty(&site)?);
 
                 } else {
@@ -65,14 +65,14 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                     name: name.cloned()
                 };
 
-                let update_site = api.update_site(id, &data)?;
+                let update_site = api.update_site(id.as_str(), &data)?;
 
                 println!("{}", serde_json::to_string_pretty(&update_site)?);
             },
             Some(("delete", sub)) => {
                 let id = sub.get_one::<String>("ID").unwrap();
 
-                api.delete_site(&id.to_string())?;
+                api.delete_site(&id.as_str())?;
             },
             _ => {
                 println!("{}", serde_json::to_string_pretty(results)?);
@@ -99,7 +99,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                     .interact()?;
 
                 let item = &results[site_slection]["id"];
-                let site = api.get_site_by_id(&item.to_string())?;
+                let site = api.get_site_by_id(&item.as_str().unwrap())?;
 
                 println!("Selection: {}", serde_json::to_string_pretty(&site)?);
             },
@@ -162,7 +162,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                             name: Some(site_name)
                         };
 
-                        let update_site = api.update_site(site, &data)?;
+                        let update_site = api.update_site(site.as_str(), &data)?;
                         println!(
                             "Successfully update site: {}",
                             serde_json::to_string_pretty(&update_site)?

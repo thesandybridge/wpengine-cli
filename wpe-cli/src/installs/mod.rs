@@ -21,9 +21,7 @@ fn get_install_data(results: &Vec<Value>, api: &API) -> Result<(String, String)>
               )
         .interact()?;
 
-    let site_id = results[site_selection]["id"].to_string();
-
-    println!("{}", site_id);
+    let site_id = results[site_selection]["id"].as_str().unwrap();
 
     let selected_site = api.get_site_by_id(&site_id)?;
     let installs = selected_site["installs"].as_array().unwrap();
@@ -37,9 +35,9 @@ fn get_install_data(results: &Vec<Value>, api: &API) -> Result<(String, String)>
               )
         .interact()?;
 
-    let install = installs[install_selection]["id"].to_string();
+    let install = installs[install_selection]["id"].as_str().unwrap();
 
-    return Ok((site_id, install));
+    return Ok((site_id.to_string(), install.to_string()));
 }
 
 /// Provides logic for the sites command.
