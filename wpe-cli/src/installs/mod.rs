@@ -29,7 +29,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
     }
 
     // Fetch sites and display results. Will also show paginated results.
-    let next = api.get_sites(Some(page_num))?;
+    let next = api.get_installs(Some(page_num))?;
     let results = next["results"].as_array().unwrap();
 
     // Check for headless mode.
@@ -37,8 +37,8 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
         match sub_n.subcommand() {
             Some(("list", sub)) => {
                 if let Some(id) = sub.get_one::<String>("ID") {
-                    let site = api.get_site_by_id(id)?;
-                    println!("{}", serde_json::to_string_pretty(&site)?);
+                    let install = api.get_install_by_id(id)?;
+                    println!("{}", serde_json::to_string_pretty(&install)?);
 
                 } else {
                     println!("{}", serde_json::to_string_pretty(results)?);
@@ -46,33 +46,38 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
             },
             Some(("add", sub)) => {
                 let name = sub.get_one::<String>("NAME").unwrap();
-                let id = sub.get_one::<String>("ID").unwrap();
+                let account_id = sub.get_one::<String>("ACCOUNT").unwrap();
+                let site_id = sub.get_one::<String>("SITE").unwrap();
+                let env = sub.get_one::<String>("ENV").unwrap();
 
-                let data = wpe::Site {
+                let data = wpe::Install {
                     name: name.to_string(),
-                    account_id: id.to_string()
+                    account_id: account_id.to_string(),
+                    site_id: site_id.to_string(),
+                    environment: env.to_string()
                 };
 
-                let add_site = api.add_site(&data)?;
+                let add_install = api.add_install(&data)?;
 
-                println!("{}", serde_json::to_string_pretty(&add_site)?);
+                println!("{}", serde_json::to_string_pretty(&add_install)?);
             },
             Some(("update", sub)) => {
-                let name = sub.get_one::<String>("NAME");
-                let id = sub.get_one::<String>("ID").unwrap();
+                let site_id = sub.get_one::<String>("SITE").unwrap();
+                let env = sub.get_one::<String>("ENV").unwrap();
 
-                let data = wpe::SitePatch {
-                    name: name.cloned()
+                let data = wpe::InstallPatch {
+                    site_id: site_id.to_string(),
+                    environment: Some(env.to_string())
                 };
 
-                let update_site = api.update_site(id, &data)?;
+                let update_site = api.update_install(site_id, &data)?;
 
                 println!("{}", serde_json::to_string_pretty(&update_site)?);
             },
             Some(("delete", sub)) => {
                 let id = sub.get_one::<String>("ID").unwrap();
 
-                api.delete_site(id)?;
+                api.delete_install(id)?;
             },
             _ => {
                 println!("{}", serde_json::to_string_pretty(results)?);
@@ -80,7 +85,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
         }
     } else {
         // Handle logic for when headless mode is not enabled
-        let options = vec!["List All", "Add site", "Update Site", "Delete Site"];
+        let options = vec!["List All", "Add Install", "Update Install", "Delete Install"];
         let selection = Select::with_theme(&ColorfulTheme::default())
             .with_prompt("Choose an option")
             .items(&options)
@@ -89,25 +94,25 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
         match selection {
             0 => {
                 // Handle logic for listing sites.
-                let site_slection = Select::with_theme(&ColorfulTheme::default())
-                    .with_prompt("Select a site to view...")
+                let install_selection = Select::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Select an install to view...")
                     .items(&results
                            .iter()
-                           .map(|site| &site["name"])
+                           .map(|install| &install["name"])
                            .collect::<Vec<&serde_json::Value>>()
                           )
                     .interact()?;
 
-                let item = &results[site_slection]["id"];
-                let site = api.get_site_by_id(&item.as_str().unwrap())?;
+                let item = &results[install_selection]["id"];
+                let install = api.get_install_by_id(&item.as_str().unwrap())?;
 
-                println!("Selection: {}", serde_json::to_string_pretty(&site)?);
+                println!("Selection: {}", serde_json::to_string_pretty(&install)?);
             },
             1 => {
                 // Logic for adding a site.
-                println!("Follow the prompts to add a site.");
-                let site_name = Input::new()
-                    .with_prompt("Enter a site name")
+                println!("Follow the prompts to add a install.");
+                let install_name = Input::new()
+                    .with_prompt("Enter a install name")
                     .interact()?;
 
                 let accounts_results = api.get_accounts(Some(0))?;
@@ -122,16 +127,37 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                     )
                     .interact()?;
 
-                let data = wpe::Site {
-                    name: site_name,
-                    account_id: accounts[account]["id"].as_str().unwrap().to_string()
+                let sites_results = api.get_accounts(Some(0))?;
+                let sites = sites_results["results"].as_array().unwrap();
+
+                let site = Select::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Select an account")
+                    .items(&sites
+                           .iter()
+                           .map(|s| &s["id"])
+                           .collect::<Vec<&serde_json::Value>>()
+                    )
+                    .interact()?;
+
+                let env = ["development", "staging", "production"];
+                let environment = Select::with_theme(&ColorfulTheme::default())
+                    .with_prompt("Select an environment")
+                    .items(&env)
+                    .interact()?;
+
+                let data = wpe::Install {
+                    name: install_name,
+                    account_id: accounts[account]["id"].as_str().unwrap().to_string(),
+                    site_id: sites[site]["id"].as_str().unwrap().to_string(),
+                    environment: env[environment].to_string()
+
                 };
 
-                let add_site = api.add_site(&data)?;
+                let add_install= api.add_install(&data)?;
 
                 println!(
-                    "Successfully added site: {}",
-                    serde_json::to_string_pretty(&add_site)?
+                    "Successfully added install: {}",
+                    serde_json::to_string_pretty(&add_install)?
                 );
             },
             2 => {

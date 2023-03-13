@@ -1,6 +1,7 @@
 use clap::{arg, Command};
 use anyhow::Result;
 mod sites;
+mod installs;
 mod accounts;
 
 /// Setup the CLI and build the commands.
