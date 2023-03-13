@@ -23,6 +23,8 @@ fn get_install_data(results: &Vec<Value>, api: &API) -> Result<(String, String)>
 
     let site_id = results[site_selection]["id"].to_string();
 
+    println!("{}", site_id);
+
     let selected_site = api.get_site_by_id(&site_id)?;
     let installs = selected_site["installs"].as_array().unwrap();
 
