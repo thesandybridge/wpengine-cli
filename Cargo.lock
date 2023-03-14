@@ -1549,7 +1549,7 @@ dependencies = [
 
 [[package]]
 name = "wpe"
-version = "0.0.17"
+version = "0.0.18"
 dependencies = [
  "anyhow",
  "clap",

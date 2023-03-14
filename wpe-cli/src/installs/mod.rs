@@ -127,17 +127,8 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
         match selection {
             0 => {
                 // Handle logic for listing sites.
-                let install_selection = Select::with_theme(&ColorfulTheme::default())
-                    .with_prompt("Select a site to view...")
-                    .items(&results
-                        .iter()
-                        .map(|install| &install["name"])
-                        .collect::<Vec<&serde_json::Value>>()
-                    )
-                    .interact()?;
-
-                let item = &results[install_selection]["id"];
-                let install = api.get_install_by_id(&item.to_string())?;
+                let (_, install_id) = get_install_data(results, &api)?;
+                let install = api.get_install_by_id(install_id.as_str())?;
 
                 println!("Selection: {}", serde_json::to_string_pretty(&install)?);
             },

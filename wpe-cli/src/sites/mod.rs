@@ -80,7 +80,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
         }
     } else {
         // Handle logic for when headless mode is not enabled
-        let options = vec!["List All", "Add site", "Update Site", "Delete Site"];
+        let options: [&str; 4] = ["List All", "Add site", "Update Site", "Delete Site"];
         let selection = Select::with_theme(&ColorfulTheme::default())
             .with_prompt("Choose an option")
             .items(&options)
