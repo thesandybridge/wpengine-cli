@@ -132,7 +132,6 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
 
                 if site_name.is_empty() {
                     println!("cancelling, no value provided.");
-
                 } else {
                     if Confirm::new().with_prompt("Does this data look right?").interact()? {
 
