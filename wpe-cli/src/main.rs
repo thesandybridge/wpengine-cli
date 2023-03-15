@@ -170,7 +170,7 @@ fn main() -> Result<()> {
             let swagger = api.swagger()?;
             println!("{}", serde_json::to_string_pretty(&swagger)?)
         }
-        _ => println!("Invalid command. Please use <help> to a see full list of commands.")
+        _ => println!("Invalid command. Please use [-h, --help] to a see full list of commands.")
     }
     Ok(())
 }
