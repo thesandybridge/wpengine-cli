@@ -156,16 +156,9 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
             },
             3 => {
                 // Logic for deleting a site.
-                let site_slection = Select::with_theme(&ColorfulTheme::default())
-                    .with_prompt("Select a site to update.")
-                    .items(&results
-                           .iter()
-                           .map(|site| &site["name"])
-                           .collect::<Vec<&serde_json::Value>>()
-                          )
-                    .interact()?;
+                let site_selections = get_selections!(results, "Select a site to update", "name");
 
-                let site = &results[site_slection]["id"].as_str().unwrap().to_string();
+                let site = &results[site_selections]["id"].as_str().unwrap().to_string();
 
                 if Confirm::new().with_prompt("Are you sure?").interact()? {
 
