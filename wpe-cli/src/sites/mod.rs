@@ -6,7 +6,7 @@ use dialoguer::{
 };
 use clap::ArgMatches;
 use anyhow::Result;
-use wpe::API;
+use wpe::*;
 
 /// Provides logic for the sites command.
 ///
@@ -48,7 +48,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                 let name = sub.get_one::<String>("NAME").unwrap();
                 let id = sub.get_one::<String>("ID").unwrap();
 
-                let data = wpe::Site {
+                let data = Site {
                     name: name.to_string(),
                     account_id: id.to_string()
                 };
@@ -61,7 +61,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                 let name = sub.get_one::<String>("NAME");
                 let id = sub.get_one::<String>("ID").unwrap();
 
-                let data = wpe::SitePatch {
+                let data = SitePatch {
                     name: name.cloned()
                 };
 
@@ -89,16 +89,9 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
         match selection {
             0 => {
                 // Handle logic for listing sites.
-                let site_slection = Select::with_theme(&ColorfulTheme::default())
-                    .with_prompt("Select a site to view...")
-                    .items(&results
-                           .iter()
-                           .map(|site| &site["name"])
-                           .collect::<Vec<&serde_json::Value>>()
-                          )
-                    .interact()?;
+                let site_selections = get_selections!(results, "Select a site to view", "name");
 
-                let item = &results[site_slection]["id"];
+                let item = &results[site_selections]["id"];
                 let site = api.get_site_by_id(&item.as_str().unwrap())?;
 
                 println!("Selection: {}", serde_json::to_string_pretty(&site)?);
@@ -113,16 +106,9 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                 let accounts_results = api.get_accounts(Some(0))?;
                 let accounts = accounts_results["results"].as_array().unwrap();
 
-                let account = Select::with_theme(&ColorfulTheme::default())
-                    .with_prompt("Select an account")
-                    .items(&accounts
-                           .iter()
-                           .map(|acc| &acc["name"])
-                           .collect::<Vec<&serde_json::Value>>()
-                    )
-                    .interact()?;
+                let account = get_selections!(accounts, "Select an account", "name");
 
-                let data = wpe::Site {
+                let data = Site {
                     name: site_name,
                     account_id: accounts[account]["id"].as_str().unwrap().to_string()
                 };
@@ -136,16 +122,9 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
             },
             2 => {
                 // Logic for updating a site.
-                let site_slection = Select::with_theme(&ColorfulTheme::default())
-                    .with_prompt("Select a site to update.")
-                    .items(&results
-                           .iter()
-                           .map(|site| &site["name"])
-                           .collect::<Vec<&serde_json::Value>>()
-                          )
-                    .interact()?;
+                let site_selections = get_selections!(results, "Select a site to update", "name");
 
-                let site = &results[site_slection]["id"].as_str().unwrap().to_string();
+                let site = &results[site_selections]["id"].as_str().unwrap().to_string();
                 let site_name: String = Input::new()
                     .with_prompt("Enter a site name")
                     .allow_empty(true)
@@ -153,12 +132,11 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
 
                 if site_name.is_empty() {
                     println!("cancelling, no value provided.");
-
                 } else {
                     if Confirm::new().with_prompt("Does this data look right?").interact()? {
 
                         // Need to do something better to handle optional values.
-                        let data = wpe::SitePatch {
+                        let data = SitePatch {
                             name: Some(site_name)
                         };
 
@@ -177,16 +155,9 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
             },
             3 => {
                 // Logic for deleting a site.
-                let site_slection = Select::with_theme(&ColorfulTheme::default())
-                    .with_prompt("Select a site to update.")
-                    .items(&results
-                           .iter()
-                           .map(|site| &site["name"])
-                           .collect::<Vec<&serde_json::Value>>()
-                          )
-                    .interact()?;
+                let site_selections = get_selections!(results, "Select a site to update", "name");
 
-                let site = &results[site_slection]["id"].as_str().unwrap().to_string();
+                let site = &results[site_selections]["id"].as_str().unwrap().to_string();
 
                 if Confirm::new().with_prompt("Are you sure?").interact()? {
 

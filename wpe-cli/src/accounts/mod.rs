@@ -1,7 +1,7 @@
 use dialoguer::{Select, theme::ColorfulTheme};
 use clap::ArgMatches;
 use anyhow::Result;
-use wpe::API;
+use wpe::*;
 
 /// Handles logic for the accounts command.
 ///
@@ -31,15 +31,7 @@ pub fn init(sub_n: &ArgMatches, command: API, headless: Option<&bool>) -> Result
         let r = serde_json::to_string_pretty(results)?;
         println!("{}", &r);
     } else {
-        let selection = Select::with_theme(&ColorfulTheme::default())
-            .with_prompt("Select a site to view...")
-            .items(&results
-                   .iter()
-                   .map(|account| &account["name"])
-                   .collect::<Vec<&serde_json::Value>>()
-                  )
-            .interact()
-            .unwrap();
+        let selection = get_selections!(results, "Select a site to view...", "name");
 
         let item = &results[selection]["id"];
         let account = command.get_account_by_id(
