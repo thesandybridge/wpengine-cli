@@ -14,14 +14,11 @@ const ENV: [&str; 3] = ["development", "staging", "production"];
 fn get_install_data(results: &Vec<Value>, api: &API) -> Result<(String, String)>{
 
     let site_selection = wpe::get_selections!(results, "Select a site to update", "name");
-
     let site_id = results[site_selection]["id"].as_str().unwrap();
-
     let selected_site = api.get_site_by_id(&site_id)?;
+
     let installs = selected_site["installs"].as_array().unwrap();
-
     let install_selection = wpe::get_selections!(installs, "Select an Install", "name");
-
     let install = installs[install_selection]["id"].as_str().unwrap();
 
     return Ok((site_id.to_string(), install.to_string()));
