@@ -122,26 +122,26 @@ fn main() -> Result<()> {
 
     // Initiate CLI commands.
     let matches = cli().get_matches();
-    let command = wpe::API::new(&config)?;
+    let api = wpe::API::new(&config)?;
     let headless = matches.get_one::<bool>("headless");
 
     // Handle logic for each command.
     match matches.subcommand() {
         Some(("sites", sub_n)) => {
             // Initialize [sites] command logic.
-            sites::init(sub_n, command, headless)?;
+            sites::init(sub_n, api, headless)?;
         },
         Some(("installs", sub_n)) => {
-            installs::init(sub_n, command, headless)?;
+            installs::init(sub_n, api, headless)?;
         }
         Some(("accounts", sub_n)) => {
             // Initialize [accounts] command logic.
-            accounts::init(sub_n, command, headless)?;
+            accounts::init(sub_n, api, headless)?;
         },
         Some(("account", sub_m)) => {
             // This will eventually be moved to the [accounts] command.
             let id = sub_m.get_one::<String>("ID").unwrap();
-            let res = command.get_account_by_id(id)?;
+            let res = api.get_account_by_id(id)?;
             println!("{}", serde_json::to_string_pretty(&res)?);
         },
         Some(("auth", sub_m)) => {
@@ -161,13 +161,13 @@ fn main() -> Result<()> {
         Some(("status", _)) => {
             // This endpoint will report the system status
             // and any outages that might be occurring.
-            let status = command.status()?;
+            let status = api.status()?;
             println!("{}", serde_json::to_string_pretty(&status)?)
         },
         Some(("swagger", _)) => {
             // This endpoint will report the system status
             // and any outages that might be occurring.
-            let swagger = command.swagger()?;
+            let swagger = api.swagger()?;
             println!("{}", serde_json::to_string_pretty(&swagger)?)
         }
         _ => println!("Invalid command. Please use <help> to a see full list of commands.")
