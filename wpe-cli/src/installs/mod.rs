@@ -12,28 +12,15 @@ use serde_json::Value;
 const ENV: [&str; 3] = ["development", "staging", "production"];
 
 fn get_install_data(results: &Vec<Value>, api: &API) -> Result<(String, String)>{
-    let site_selection = Select::with_theme(&ColorfulTheme::default())
-        .with_prompt("Select a site to update")
-        .items(&results
-               .iter()
-               .map(|i| &i["name"])
-               .collect::<Vec<&serde_json::Value>>()
-              )
-        .interact()?;
+
+    let site_selection = wpe::get_selections!(results, "Select a site to update", "name");
 
     let site_id = results[site_selection]["id"].as_str().unwrap();
 
     let selected_site = api.get_site_by_id(&site_id)?;
     let installs = selected_site["installs"].as_array().unwrap();
 
-    let install_selection = Select::with_theme(&ColorfulTheme::default())
-        .with_prompt("Select an Install")
-        .items(&installs
-               .iter()
-               .map(|i| &i["name"])
-               .collect::<Vec<&serde_json::Value>>()
-              )
-        .interact()?;
+    let install_selection = wpe::get_selections!(installs, "Select an Install", "name");
 
     let install = installs[install_selection]["id"].as_str().unwrap();
 
@@ -138,26 +125,12 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
                 let accounts_results = api.get_accounts(Some(0))?;
                 let accounts = accounts_results["results"].as_array().unwrap();
 
-                let account = Select::with_theme(&ColorfulTheme::default())
-                    .with_prompt("Select an account")
-                    .items(&accounts
-                           .iter()
-                           .map(|acc| &acc["name"])
-                           .collect::<Vec<&serde_json::Value>>()
-                          )
-                    .interact()?;
+                let account = wpe::get_selections!(accounts, "Select an account", "name");
 
                 let sites_results = api.get_sites(Some(1))?;
                 let sites = sites_results["results"].as_array().unwrap();
 
-                let site = Select::with_theme(&ColorfulTheme::default())
-                    .with_prompt("Select a site")
-                    .items(&sites
-                           .iter()
-                           .map(|s| &s["name"])
-                           .collect::<Vec<&serde_json::Value>>()
-                          )
-                    .interact()?;
+                let site = wpe::get_selections!(sites, "Select a site", "name");
 
                 let install: String = Input::new()
                     .with_prompt("Enter an install name")

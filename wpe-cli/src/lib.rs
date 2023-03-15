@@ -647,4 +647,20 @@ impl API {
     }
 }
 
+#[macro_export]
+macro_rules! get_selections {
+    ($item:ident, $prompt:literal, $id:literal) => {
+        {
+            let selection = Select::with_theme(&ColorfulTheme::default())
+                .with_prompt($prompt)
+                .items(&$item
+                       .iter()
+                       .map(|i| &i[$id])
+                       .collect::<Vec<&serde_json::Value>>()
+                      )
+                .interact()?;
+            selection
+        }
+    };
+}
 
