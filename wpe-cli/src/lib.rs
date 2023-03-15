@@ -1,5 +1,5 @@
 use home_config::HomeConfig;
-use std::str;
+use std::{str, path::PathBuf};
 use regex::Regex;
 use serde::{Deserialize, Serialize};
 use dialoguer::Input;
@@ -13,90 +13,89 @@ pub struct Config {
     pub wpengine_api: String
 }
 
-/// This function will prompt the user for their WPEngine API credentials
-/**
-  - Stores wpengine API username and password in config file.
-  - $HOME/.config/wpe/wpeconfig.toml
-  */
-fn set_config(username: String, token: String) -> Result<()> {
-
-    let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
-    let data: Config = Config {
-        wpengine_user_id: username,
-        wpengine_password: token,
-        wpengine_api: String::from("https://api.wpengineapi.com/v1")
-    };
-    config.save_toml(&data).unwrap();
-
-    Ok(())
+pub struct Auth {
+    config: HomeConfig,
+    file: PathBuf,
 }
 
-/// Check if username and password are stored in config file.
-fn authenticated() -> bool {
+impl Auth {
 
-    let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
-    let file = HomeConfig::path(&config);
+    pub fn new() -> Self {
+        let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
+        let file = HomeConfig::path(&config).to_path_buf();
+        Self {config, file}
+    }
 
-    // Check if config file exists.
-    if file.exists() {
-        let toml = config.toml::<Config>().unwrap();
-        let re = Regex::new(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$").unwrap();
-        // check if username matches UUID format
-        // TODO: need a better check here, should consider pinging the API for a 200.
-        if re.is_match(&toml.wpengine_user_id) {
-            true
+    pub fn get(&self) -> Result<Config> {
+        let toml = self.config.toml::<Config>().unwrap();
+        Ok(toml)
+    }
+
+    pub fn config_path(&self) -> Result<()> {
+        println!("{}", self.file.display());
+        Ok(())
+    }
+
+    fn set(&self, username: String, token: String) -> Result<()> {
+        let data: Config = Config {
+            wpengine_user_id: username,
+            wpengine_password: token,
+            wpengine_api: String::from("https://api.wpengineapi.com/v1")
+        };
+        self.config.save_toml(&data).unwrap();
+        Ok(())
+    }
+
+    fn authenticated(&self) -> bool {
+        let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
+        let file = HomeConfig::path(&config);
+
+        // Check if config file exists.
+        if file.exists() {
+            let toml = config.toml::<Config>().unwrap();
+            let re = Regex::new(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$").unwrap();
+            // check if username matches UUID format
+            // TODO: need a better check here, should consider pinging the API for a 200.
+            if re.is_match(&toml.wpengine_user_id) {
+                true
+            } else {
+                false
+            }
         } else {
             false
         }
-    } else {
-        false
-    }
-}
-
-/// Get username and password from config file.
-pub fn get_config() -> Config {
-    let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
-    let toml = config.toml::<Config>().unwrap();
-    toml
-}
-
-/// Reset the config file. This should be used if you change your API token or for debugging.
-pub fn reset() -> Result<()> {
-    let config = HomeConfig::with_config_dir("wpe", "wpeconfig.toml");
-    let file = HomeConfig::path(&config);
-    if file.exists() {
-        std::fs::remove_file(file)?;
     }
 
-    Ok(())
-}
-
-/// Handles the cli for the authentication.
-pub fn set_auth() -> Result<()> {
-    println!("Authenticate with wpengine.");
-
-    let username: String = Input::new()
-        .with_prompt("Enter API Username")
-        .interact()
-        .unwrap();
-
-    let token: String = Input::new()
-        .with_prompt("Enter API Password")
-        .interact()
-        .unwrap();
-
-    set_config(username, token)?;
-
-    Ok(())
-}
-
-/// Handles user authentication.
-/// If the user is not authenticated redirect them to authentication.
-pub fn init() -> Result<()> {
-    if !authenticated() {
-        set_auth()?;
+    pub fn logout(&self) -> Result<()> {
+        if self.file.exists() {
+            std::fs::remove_file(&self.file)?;
+        }
+        Ok(())
     }
-    Ok(())
+
+    pub fn login(&self) -> Result<()> {
+        println!("Authenticate with wpengine.");
+        let username: String = Input::new()
+            .with_prompt("Enter API Username")
+            .interact()
+            .unwrap();
+
+        let token: String = Input::new()
+            .with_prompt("Enter API Password")
+            .interact()
+            .unwrap();
+
+        self.set(username, token)?;
+        Ok(())
+    }
+
+    pub fn init(&self) -> Result<()> {
+        if !self.authenticated() {
+            self.login()?;
+        }
+        Ok(())
+    }
+
 }
 
 pub struct API {
@@ -185,10 +184,10 @@ pub struct Backup {
 
 impl API {
     /// Creates a new reqwest client instance
-    pub fn new() -> Self {
+    pub fn new(auth: &Auth) -> Result<Self> {
         let client = reqwest::blocking::Client::new();
-        let config = get_config();
-        Self { client, config}
+        let config = Auth::get(auth)?;
+        Ok(Self { client, config})
     }
 
     /// Status endpoint to check API health.

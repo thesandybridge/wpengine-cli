@@ -90,8 +90,12 @@ fn cli() -> Command {
                     .about("Login to WP Engine API")
                 )
                 .subcommand(
-                    Command::new("reset")
+                    Command::new("logout")
                         .about("Reset authentication")
+                )
+                .subcommand(
+                    Command::new("path")
+                        .about("Path to config file")
                 )
                 .subcommand_required(true)
         )
@@ -107,7 +111,8 @@ fn cli() -> Command {
 
 fn main() -> Result<()> {
     // Check if authentication exists, else handle authentication.
-    wpe::init()?;
+    let config = wpe::Auth::new();
+    wpe::Auth::init(&config)?;
 
     // Handle missing cursor when pressing ctrl-c to quit.
     ctrlc::set_handler(move || {
@@ -117,7 +122,7 @@ fn main() -> Result<()> {
 
     // Initiate CLI commands.
     let matches = cli().get_matches();
-    let command = wpe::API::new();
+    let command = wpe::API::new(&config)?;
     let headless = matches.get_one::<bool>("headless");
 
     // Handle logic for each command.
@@ -142,11 +147,14 @@ fn main() -> Result<()> {
         Some(("auth", sub_m)) => {
             match sub_m.subcommand() {
                 Some(("login", _)) => {
-                    wpe::set_auth()?;
+                    wpe::Auth::login(&config)?;
                 },
-                Some(("reset", _)) => {
-                    wpe::reset()?;
+                Some(("logout", _)) => {
+                    wpe::Auth::logout(&config)?;
                 },
+                Some(("path", _)) => {
+                    wpe::Auth::config_path(&config)?;
+                }
                 _ => println!("Error with auth command.")
             }
         },
