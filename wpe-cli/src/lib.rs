@@ -1,3 +1,4 @@
+/// wpe cli library
 use home_config::HomeConfig;
 use std::{str, path::PathBuf};
 use regex::Regex;
