@@ -74,6 +74,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
             },
             1 => {
                 // Logic for adding an SSH Key to the authorized user's account.
+                // TODO: fix bug preventing pasting public key.
                 println!("Follow the prompts to add an SSH Key.");
                 let pub_key: String = Input::new()
                     .with_prompt("Enter your public RSA key")
@@ -90,6 +91,7 @@ pub fn init(sub_n: &ArgMatches, api: API, headless: Option<&bool>) -> Result<()>
             },
             2 => {
                 // Logic for deleting an install from an SSH Key.
+                // TODO: fix bugs.
                 let ssh_keys = &results;
                 let ssh_selection = get_selections!(ssh_keys, "Select an SSH Key", "comment");
                 let key = ssh_keys[ssh_selection]["uuid"].as_str().unwrap();
