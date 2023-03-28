@@ -3,6 +3,7 @@ use anyhow::Result;
 mod sites;
 mod installs;
 mod accounts;
+mod ssh;
 
 /// Setup the CLI and build the commands.
 fn cli() -> Command {
@@ -72,6 +73,26 @@ fn cli() -> Command {
                 )
         )
         .subcommand(
+            Command::new("ssh")
+                .about("Display list of ssh keys as selection.")
+                .arg(arg!(<PAGE> "The page number").required(false))
+                .after_help("Selecting one will fetch the ssh keys and display more options.")
+                .subcommand(
+                    Command::new("list")
+                        .about("List ssh keys.")
+                )
+                .subcommand(
+                    Command::new("add")
+                        .about("Add a site using headless mode")
+                        .arg(arg!(<KEY> "RSA Public Key").required(true))
+                )
+                .subcommand(
+                    Command::new("delete")
+                        .about("Delete an ssh key.")
+                        .arg(arg!(<ID> "ssh key ID").required(true))
+                )
+        )
+        .subcommand(
             Command::new("accounts")
                 .about("Fetch all sites from your wpengine account")
                 .arg(arg!(<PAGE> "The page number").required(false))
@@ -133,7 +154,10 @@ fn main() -> Result<()> {
         },
         Some(("installs", sub_n)) => {
             installs::init(sub_n, api, headless)?;
-        }
+        },
+        Some(("ssh", sub_n)) => {
+            ssh::init(sub_n, api, headless)?;
+        },
         Some(("accounts", sub_n)) => {
             // Initialize [accounts] command logic.
             accounts::init(sub_n, api, headless)?;

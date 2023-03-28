@@ -169,7 +169,7 @@ pub struct DomainPatch {
 
 #[derive(Serialize, Deserialize, Default, Debug)]
 pub struct SSHKey {
-    public_key: String
+    pub public_key: String
 }
 
 #[derive(Serialize, Deserialize, Default, Debug)]
@@ -527,7 +527,7 @@ impl API {
     }
 
     /// Get a list of ssh keys for authorized user.
-    pub fn get_ssh_keys(&self, page: Option<i32>) -> Result<serde_json::Value, anyhow::Error> {
+    pub fn get_ssh_keys(&self, page: Option<u8>) -> Result<serde_json::Value, anyhow::Error> {
         let res = self
             .client
             .get(&format!("{}/ssh_keys?offset={}", &self.config.wpengine_api, page.unwrap_or(0) * 100))
