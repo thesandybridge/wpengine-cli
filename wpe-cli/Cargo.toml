@@ -4,7 +4,6 @@ version = "0.0.19"
 edition = "2021"
 license = "MIT OR Apache-2.0"
 description = "A CLI tool for the wpengine API."
-homepage = "https://github.com/thesandybridge/wpengine-cli"
 repository = "https://github.com/thesandybridge/wpengine-cli"
 readme = "../README.md"
 keywords = ["cli", "search", "demo"]
